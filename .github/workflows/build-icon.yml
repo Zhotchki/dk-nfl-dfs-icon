@@ -1,0 +1,19 @@
+name: Build icon PNG
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode icon
+        run: base64 --decode icon.b64 > icon.png
+      - name: Commit PNG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add icon.png
+          git commit -m "Build iPhone app icon" || exit 0
+          git push
