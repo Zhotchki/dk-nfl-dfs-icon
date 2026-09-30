@@ -1,0 +1,32 @@
+name: Build NFL Picks icon
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-nfl-picks-icon.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract deployed NFL Picks icon
+        shell: python
+        run: |
+          import re, urllib.request, base64, pathlib
+          url="https://script.google.com/macros/s/AKfycbyU6Gb-uE-dpVIPwYMKhlp6KITzz3mx_HRfQvdt1rlo1JAAO-y4b_UOv01B48bCjy5O/exec"
+          html=urllib.request.urlopen(url).read().decode("utf-8")
+          m=re.search(r'apple-touch-icon"[^>]+href="data:image/png;base64,([^"]+)',html)
+          if not m: raise SystemExit("Embedded NFL Picks icon not found")
+          out=pathlib.Path("nfl-picks/icon.png")
+          out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_bytes(base64.b64decode(m.group(1)))
+      - name: Commit public icon
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nfl-picks/icon.png
+          git commit -m "Publish NFL Picks iPhone icon" || exit 0
+          git push
