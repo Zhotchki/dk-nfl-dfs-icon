@@ -1,0 +1,18 @@
+{
+  "id": "/dk-nfl-dfs-icon/nfl-picks/",
+  "name": "NFL Picks",
+  "short_name": "NFL Picks",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "icons": [
+    {
+      "src": "./icon.png?v=6490",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
