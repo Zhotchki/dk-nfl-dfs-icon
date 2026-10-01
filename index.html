@@ -40,12 +40,13 @@
     h1{line-height:1.25;overflow-wrap:break-word}
     #appVersion{display:block;font-size:12px!important;opacity:1!important;color:#cbd5e1;margin-top:4px}
     .sub{color:#cbd5e1;line-height:1.45;overflow-wrap:anywhere}
+  .player-projection{display:block;margin-top:4px;color:#93c5fd;font-weight:600;font-size:12px}
   </style>
 </head>
 <body>
 <div class="app">
   <div class="top">
-    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.15</span></h1>
+    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.16</span></h1>
     <div class="sub" id="status">Loading player model…</div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('players',this)">Players</button>
@@ -153,7 +154,7 @@ function playerCard(x){
 }
 function renderLineups(){
   const el=document.getElementById('lineups');
-  el.innerHTML=DATA.lineups.map(l=>`<div class="card"><div class="row"><div class="name">Lineup #${l.rank}</div><div class="meta">$${num(l.salary,0)} • ${num(l.proj,1)} proj</div></div><div class="lineup">${l.players.map((p,i)=>`<div>${['QB','RB','RB','WR','WR','WR','TE','FLEX','DST'][i]}: <b>${esc(p)}</b></div>`).join('')}</div></div>`).join('')||'<div class="loading">Generate lineups in the sheet/app first.</div>';
+  el.innerHTML=DATA.lineups.map(l=>`<div class="card"><div class="row"><div class="name">Lineup #${l.rank}</div><div class="meta">$${num(l.salary,0)} • ${num(l.proj,1)} saved proj</div></div><div class="meta" style="margin-top:8px">Current player projections</div><div class="lineup">${l.players.map((p,i)=>`<div>${['QB','RB','RB','WR','WR','WR','TE','FLEX','DST'][i]}: <b>${esc(p)}</b><span class="player-projection">${l.playerProjections&&l.playerProjections[i]!=null?num(l.playerProjections[i],1)+' projected pts':'Projection unavailable'}</span></div>`).join('')}</div></div>`).join('')||'<div class="loading">Generate lineups in the sheet/app first.</div>';
 }
 function showTab(name,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('players').classList.toggle('hidden',name!=='players');document.getElementById('lineups').classList.toggle('hidden',name!=='lineups');document.getElementById('playerControls').classList.toggle('hidden',name!=='players');}
 function errorText(e){if(!e)return 'Unknown server error';if(typeof e==='string')return e;if(e.message)return e.message;try{return JSON.stringify(e)}catch(_){return String(e)}}
