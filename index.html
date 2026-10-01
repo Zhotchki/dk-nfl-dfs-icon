@@ -32,12 +32,20 @@
     .lineup{display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:12px;margin:8px 0}.lineup div{background:#0b1220;padding:6px;border-radius:7px}
     .loading{padding:24px;text-align:center;color:var(--muted)} .hidden{display:none}
     .footer{position:fixed;bottom:0;left:0;right:0;background:#111827;border-top:1px solid #334155;padding:8px;text-align:center;font-size:11px;color:#94a3b8}
+  
+    /* Keep the header below the iPhone status bar, including while scrolling. */
+    .app{padding-top:calc(env(safe-area-inset-top,0px) + 12px)}
+    .top{top:env(safe-area-inset-top,0px);background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}
+    body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:20;pointer-events:none}
+    h1{line-height:1.25;overflow-wrap:break-word}
+    #appVersion{display:block;font-size:12px!important;opacity:1!important;color:#cbd5e1;margin-top:4px}
+    .sub{color:#cbd5e1;line-height:1.45;overflow-wrap:anywhere}
   </style>
 </head>
 <body>
 <div class="app">
   <div class="top">
-    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.11</span></h1>
+    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.14</span></h1>
     <div class="sub" id="status">Loading player model…</div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('players',this)">Players</button>
