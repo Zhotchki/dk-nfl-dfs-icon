@@ -46,7 +46,7 @@
 <body>
 <div class="app">
   <div class="top">
-    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.16</span></h1>
+    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.17</span></h1>
     <div class="sub" id="status">Loading player model…</div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('players',this)">Players</button>
@@ -168,10 +168,24 @@ async function runMobileAction(params,label,success){
   setStatus(label);
   const progressTimer=setInterval(()=>{const seconds=Math.floor((Date.now()-started)/1000);setStatus(label+' '+seconds+'s elapsed'+(seconds>=45?' • Still waiting for the server. Keep this app open.':''));},1000);
   try{
-    const r=await apiJsonp(params,360000);
+    let r=await apiJsonp(params,360000);
+    const waitStarted=Date.now();
+    while(r&&!r.ok&&r.code==='DFS_BUSY'&&Date.now()-waitStarted<120000){
+      clearInterval(progressTimer);
+      const op=r.status&&r.status.operation;
+      const age=op?Math.max(0,Math.floor((Date.now()-new Date(op.startedAt).getTime())/1000)):null;
+      setStatus('Waiting for '+(op?op.action:'another server operation')+(age!==null?' ('+age+'s elapsed)':'')+'. Your request has not started.');
+      await new Promise(resolve=>setTimeout(resolve,5000));
+      const check=await apiJsonp({action:'status'},15000);
+      if(!check||!check.ok)throw new Error('Could not check the active server operation');
+      if(check.status.running){r.status=check.status;continue;}
+      setStatus(label+' Server lock available; starting your request…');
+      r=await apiJsonp(params,360000);
+    }
     if(!r||!r.ok){
       if(r&&(r.code==='DFS_BUSY'||/already running/.test(r.error||''))){
-        setStatus('A DFS update is in progress. Wait for it to finish, then reopen the app to load the latest data.');
+        const op=r.status&&r.status.operation;
+        setStatus('Request not started: '+(op?op.action:'another server operation')+' still holds the update lock after 2 minutes.');
         return;
       }
       throw new Error(r&&r.error||'Update failed');
