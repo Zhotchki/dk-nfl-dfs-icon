@@ -140,7 +140,7 @@ function playerCard(x){
   return `<div class="card"><div class="row"><div><div class="name">${esc(x.name)}</div><div class="meta">${x.pos} • ${x.team} vs ${x.opp} • $${num(x.salary,0)}</div></div><div><span class="badge ${cls}">${esc(x.grade||'')}</span></div></div>
   <div><span class="badge tag">${esc(x.tag||'')}</span><span class="badge">${esc(x.injury||'Healthy')}</span><span class="badge">Matchup ${esc(x.matchup||'-')}</span></div>
   <div class="metrics"><div class="m"><b>${num(x.proj,1)}</b><span>Proj</span></div><div class="m"><b>${num(x.ceil,1)}</b><span>Ceiling</span></div><div class="m"><b>${num(x.value,2)}x</b><span>Value</span></div><div class="m"><b>${pct(x.boom)}</b><span>Boom</span></div></div>
-  <div class="metrics"><div class="m"><b>${pct(x.own)}</b><span>Own</span></div><div class="m"><b>${pct(x.usageTrend,true)}</b><span>Usage</span></div><div class="m"><b>${num(x.implied,1)}</b><span>Team Total</span></div><div class="m"><b>${num(x.wind,0)}</b><span>Wind</span></div></div>
+  <div class="metrics"><div class="m"><b>${pct(x.own)}</b><span>Own</span></div><div class="m"><b>${pct(x.usageTrend,true)}</b><span>Usage Trend</span></div><div class="m"><b>${num(x.implied,1)}</b><span>Team Total</span></div><div class="m"><b>${num(x.wind,0)}</b><span>Wind</span></div></div>
   <div class="why">${esc(x.why||'')}</div></div>`;
 }
 function renderLineups(){
@@ -149,8 +149,32 @@ function renderLineups(){
 }
 function showTab(name,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('players').classList.toggle('hidden',name!=='players');document.getElementById('lineups').classList.toggle('hidden',name!=='lineups');document.getElementById('playerControls').classList.toggle('hidden',name!=='players');}
 function errorText(e){if(!e)return 'Unknown server error';if(typeof e==='string')return e;if(e.message)return e.message;try{return JSON.stringify(e)}catch(_){return String(e)}}
-async function refreshAll(){setStatus('Refreshing all data…');try{const r=await apiJsonp({action:'refreshall',mode:v('mode')},120000);if(!r||!r.ok)throw new Error(r&&r.error||'Refresh failed');DATA=r.data;populateFilters();renderPlayers();renderLineups();setStatus('Refresh complete');}catch(e){setStatus('Error: '+errorText(e));}}
-async function refreshInjuries(){setStatus('Refreshing injuries…');try{const r=await apiJsonp({action:'injuries',mode:v('mode')},120000);if(!r||!r.ok)throw new Error(r&&r.error||'Injury refresh failed');DATA=r.data;populateFilters();renderPlayers();renderLineups();setStatus('Injuries updated');}catch(e){setStatus('Error: '+errorText(e));}}
+let mutationPending=false;
+async function runMobileAction(params,label,success){
+  if(mutationPending)return;
+  mutationPending=true;
+  const buttons=Array.from(document.querySelectorAll('.actions button'));
+  buttons.forEach(b=>b.disabled=true);
+  setStatus(label);
+  try{
+    const r=await apiJsonp(params,360000);
+    if(!r||!r.ok){
+      if(r&&(r.code==='DFS_BUSY'||/already running/.test(r.error||''))){
+        setStatus('A DFS update is in progress. Wait for it to finish, then reopen the app to load the latest data.');
+        return;
+      }
+      throw new Error(r&&r.error||'Update failed');
+    }
+    DATA=r.data;populateFilters();renderPlayers();renderLineups();setStatus(success);
+    if(params.action==='generate')showTab('lineups',document.querySelectorAll('.tab')[1]);
+  }catch(e){
+    setStatus('Update response unavailable: '+errorText(e)+'. The server may still be working; reopen the app to check before retrying.');
+  }finally{
+    mutationPending=false;buttons.forEach(b=>b.disabled=false);
+  }
+}
+async function refreshAll(){return runMobileAction({action:'refreshall',mode:v('mode')},'Refreshing all data…','Refresh complete');}
+async function refreshInjuries(){return runMobileAction({action:'injuries',mode:v('mode')},'Refreshing injuries…','Injuries updated');}
 
 function mobileSlateMatch(start,slate,customDay){
   const d=new Date(start); if(!isFinite(d.getTime())) return false;
@@ -168,10 +192,10 @@ function mobileSlateMatch(start,slate,customDay){
   return true;
 }
 
-async function generate(){setStatus('Generating lineups…');const f={action:'generate',mode:v('mode'),preset:v('slate'),day:v('day')};try{const r=await apiJsonp(f,120000);if(!r||!r.ok)throw new Error(r&&r.error||'Generation failed');DATA=r.data;populateFilters();renderPlayers();renderLineups();setStatus('Lineups generated • '+f.preset);showTab('lineups',document.querySelectorAll('.tab')[1]);}catch(e){setStatus('Error: '+errorText(e));}}
+async function generate(){return runMobileAction({action:'generate',mode:v('mode'),preset:v('slate'),day:v('day')},'Generating lineups…','Lineups generated • '+v('slate'));}
 function setStatus(x){document.getElementById('status').textContent=x} function v(id){return document.getElementById(id).value}
 function num(x,d){const n=Number(x);return isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):'-'}
-function pct(x,signed){const n=Number(x);if(!isFinite(n))return '-';return (signed&&n>0?'+':'')+(n*100).toFixed(0)+'%'}
+function pct(x,signed){if(x===null||x===undefined||x==='')return '—';const n=Number(x);if(!isFinite(n))return '-';return (signed&&n>0?'+':'')+(n*100).toFixed(0)+'%'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1411').catch(()=>{}));}
 loadData();
