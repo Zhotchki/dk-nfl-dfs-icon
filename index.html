@@ -46,7 +46,7 @@
 <body>
 <div class="app">
   <div class="top">
-    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.21</span></h1>
+    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.22</span></h1>
     <div class="sub" id="status">Loading player model…</div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('players',this)">Players</button>
@@ -211,11 +211,11 @@ function mobileSlateMatch(start,slate,customDay){
   const mins=Number(parts.find(z=>z.type==='hour').value)*60+Number(parts.find(z=>z.type==='minute').value);
   slate=(slate||'THU-MON').toUpperCase();
   if(slate==='THU-MON') return ['THURSDAY','FRIDAY','SATURDAY','SUNDAY','MONDAY'].includes(dow);
-  if(slate==='SUNDAY MAIN') return dow==='SUNDAY'&&mins<1080;
-  if(slate==='EARLY ONLY') return dow==='SUNDAY'&&mins<900;
+  if(slate==='SUNDAY MAIN') return dow==='SUNDAY'&&mins>=720&&mins<960;
+  if(slate==='EARLY ONLY') return dow==='SUNDAY'&&mins>=720&&mins<900;
   if(slate==='SUN-MON') return dow==='SUNDAY'||dow==='MONDAY';
-  if(slate==='AFTERNOON ONLY') return dow==='SUNDAY'&&mins>=900&&mins<1080;
-  if(slate==='AFTERNOON TURBO') return dow==='SUNDAY'&&mins>=925&&mins<1080;
+  if(slate==='AFTERNOON ONLY') return dow==='SUNDAY'&&mins>=900&&mins<960;
+  if(slate==='AFTERNOON TURBO') return dow==='SUNDAY'&&mins>=925&&mins<960;
   if(slate==='CUSTOM') return customDay==='ALL'||dow===String(customDay).toUpperCase();
   return true;
 }
