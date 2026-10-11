@@ -46,7 +46,7 @@
 <body>
 <div class="app">
   <div class="top">
-    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.20</span></h1>
+    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.21</span></h1>
     <div class="sub" id="status">Loading player model…</div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('players',this)">Players</button>
@@ -190,12 +190,12 @@ async function runMobileAction(params,label,success){
         setStatus('Request not started: '+(op?op.action:'another server operation')+' still holds the update lock after 2 minutes.');
         return;
       }
-      throw new Error(r&&r.error||'Update failed');
+      const error=new Error(r&&r.error||'Update failed');error.serverRejected=!!r;throw error;
     }
     DATA=r.data;populateFilters();renderPlayers();renderLineups();setStatus(success);
     if(params.action==='generate')showTab('lineups',document.querySelectorAll('.tab')[1]);
   }catch(e){
-    setStatus('Update response unavailable: '+errorText(e)+'. The server may still be working; reopen the app to check before retrying.');
+    setStatus(e.serverRejected?'Request stopped: '+errorText(e):'Update response unavailable: '+errorText(e)+'. The server may still be working; reopen the app to check before retrying.');
   }finally{
     clearInterval(progressTimer);
     mutationPending=false;buttons.forEach(b=>b.disabled=false);
