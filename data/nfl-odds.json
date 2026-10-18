@@ -1,63 +1,7 @@
 {
-  "checkedAt": "2026-10-18T15:49:17.445Z",
+  "checkedAt": "2026-10-18T18:33:42.889Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
-    {
-      "away": "BAL",
-      "home": "CLE",
-      "kickoff": "2026-10-18T17:00Z",
-      "total": 39.5,
-      "spreadHome": 3,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "CAR",
-      "home": "PHI",
-      "kickoff": "2026-10-18T17:00Z",
-      "total": 39.5,
-      "spreadHome": 3,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "CHI",
-      "home": "ATL",
-      "kickoff": "2026-10-18T17:00Z",
-      "total": 51.5,
-      "spreadHome": 1.5,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "NO",
-      "home": "NYG",
-      "kickoff": "2026-10-18T17:00Z",
-      "total": 46.5,
-      "spreadHome": 1.5,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "NYJ",
-      "home": "NE",
-      "kickoff": "2026-10-18T17:00Z",
-      "total": 43.5,
-      "spreadHome": -7.5,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "PIT",
-      "home": "TB",
-      "kickoff": "2026-10-18T17:00Z",
-      "total": 38.5,
-      "spreadHome": 1.5,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "TEN",
-      "home": "IND",
-      "kickoff": "2026-10-18T17:00Z",
-      "total": 43.5,
-      "spreadHome": -6.5,
-      "source": "ESPN / DraftKings"
-    },
     {
       "away": "ARI",
       "home": "LAR",
@@ -96,14 +40,6 @@
       "kickoff": "2026-10-20T00:15Z",
       "total": 52.5,
       "spreadHome": -7.5,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "NE",
-      "home": "CHI",
-      "kickoff": "2026-10-23T00:15Z",
-      "total": 47.5,
-      "spreadHome": -1.5,
       "source": "ESPN / DraftKings"
     }
   ]
