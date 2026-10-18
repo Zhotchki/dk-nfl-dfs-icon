@@ -1,0 +1,61 @@
+name: Refresh public NFL odds
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/refresh-nfl-odds.yml"
+  schedule:
+    - cron: "7,37 * * * *"
+permissions:
+  contents: write
+concurrency:
+  group: public-nfl-odds
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Fetch current ESPN sportsbook lines
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          async function main(){
+            const now=new Date(),dates=[];
+            for(let i=-3;i<=4;i++){const d=new Date(now);d.setUTCDate(d.getUTCDate()+i);dates.push(d.toISOString().slice(0,10).replaceAll('-',''));}
+            const checks=[],games=[];
+            const num=v=>v!==''&&v!=null&&Number.isFinite(Number(v))?Number(v):null;
+            await Promise.all(dates.map(async date=>{
+              const r=await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+date+'&limit=1000',{signal:AbortSignal.timeout(30000)});
+              if(!r.ok)throw Error('Scoreboard HTTP '+r.status+' for '+date);
+              const j=await r.json();checks.push({date,events:(j.events||[]).length});
+              for(const e of j.events||[]){
+                const c=(e.competitions||[])[0]||{},home=(c.competitors||[]).find(t=>t.homeAway==='home'),away=(c.competitors||[]).find(t=>t.homeAway==='away');
+                if(!home||!away)continue;
+                const odds=c.odds||[],o=odds.find(x=>String(x.provider?.name||'').toLowerCase().includes('draftkings'))||odds[0]||{};
+                const total=num(o.overUnder);let spreadHome=num(o.pointSpread?.home?.close?.line);
+                if(spreadHome===null){const n=num(o.spread);if(n===0)spreadHome=0;else if(n!==null&&o.homeTeamOdds?.favorite===true)spreadHome=-Math.abs(n);else if(n!==null&&o.awayTeamOdds?.favorite===true)spreadHome=Math.abs(n);}
+                if(total===null||total<=0||spreadHome===null)continue;
+                games.push({away:away.team.abbreviation,home:home.team.abbreviation,kickoff:c.date||e.date,total,spreadHome,source:'ESPN / '+(o.provider?.name||'odds')});
+              }
+            }));
+            if(!games.length)throw Error('No current odds returned; previous snapshot retained');
+            games.sort((a,b)=>a.kickoff.localeCompare(b.kickoff)||a.away.localeCompare(b.away));
+            fs.mkdirSync('data',{recursive:true});
+            fs.writeFileSync('data/nfl-odds.json',JSON.stringify({checkedAt:now.toISOString(),source:'ESPN scoreboard sportsbook odds',games},null,2)+'\n');
+            console.log('Verified '+games.length+' game lines across '+checks.length+' dates');
+          }
+          main().catch(e=>{console.error(e.message);process.exitCode=1;});
+          NODE
+      - name: Publish public odds snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/nfl-odds.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Refresh public NFL sportsbook odds"
+          git pull --rebase origin main
+          git push origin HEAD:main
