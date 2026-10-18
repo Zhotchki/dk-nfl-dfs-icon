@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-18T20:58:42.267Z",
+  "checkedAt": "2026-10-18T22:57:45.887Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -7,7 +7,7 @@
       "home": "GB",
       "kickoff": "2026-10-19T00:20Z",
       "total": 53.5,
-      "spreadHome": -1.5,
+      "spreadHome": 1.5,
       "source": "ESPN / Draft Kings"
     },
     {
@@ -16,6 +16,14 @@
       "kickoff": "2026-10-20T00:15Z",
       "total": 52.5,
       "spreadHome": -7.5,
+      "source": "ESPN / Draft Kings"
+    },
+    {
+      "away": "NE",
+      "home": "CHI",
+      "kickoff": "2026-10-23T00:15Z",
+      "total": 49.5,
+      "spreadHome": -2.5,
       "source": "ESPN / Draft Kings"
     }
   ]
