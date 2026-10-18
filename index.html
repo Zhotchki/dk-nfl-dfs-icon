@@ -46,7 +46,7 @@
 <body>
 <div class="app">
   <div class="top">
-    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.24</span></h1>
+    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.25</span></h1>
     <div class="sub" id="status">Loading player model…</div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('players',this)">Players</button>
@@ -169,64 +169,115 @@ function pendingMobileRequest(params){
   const key=mobileRequestKey(params);let old=null;
   try{old=JSON.parse(localStorage.getItem('dfsPendingAction')||'null');}catch(e){}
   if(old&&old.key===key&&Date.now()-old.started<12*60*1000)return old;
-  const request={key:key,id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),started:Date.now()};
+  const request={key:key,id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),started:Date.now(),params:Object.assign({},params)};
   try{localStorage.setItem('dfsPendingAction',JSON.stringify(request));}catch(e){}
   return request;
 }
 function clearPendingMobileRequest(id){
   try{const old=JSON.parse(localStorage.getItem('dfsPendingAction')||'null');if(old&&old.id===id)localStorage.removeItem('dfsPendingAction');}catch(e){}
 }
+async function readMobileJsonp(params,timeoutMs=25000,attempts=2){
+  let last;
+  for(let i=0;i<attempts;i++){
+    try{return await apiJsonp(params,timeoutMs);}catch(e){last=e;if(i+1<attempts)await new Promise(resolve=>setTimeout(resolve,1000*(i+1)));}
+  }
+  throw last;
+}
+function mobileStatusParams(params,request){
+  return {action:'status',requestId:request.id,requestKey:request.key,requestStartedAt:request.started};
+}
+async function completedMobileResult(status,params,request,token){
+  const result=status.requestResult||(status.lastOperation&&status.lastOperation.token===token?status.lastOperation:null);
+  if(!result)return null;
+  if(!result.ok){const e=new Error(result.error||'The server operation failed.');e.serverRejected=true;throw e;}
+  return {ok:true,data:await readMobileJsonp({action:'data',mode:params.mode},45000,3),reused:true};
+}
+async function recoverMobileAction(params,request,progress){
+  const started=Date.now();let failures=0,idle=0,retries=0,token=null;
+  while(Date.now()-started<360000){
+    progress('Reconnecting — checking your saved request');
+    let reply;
+    try{reply=await readMobileJsonp(mobileStatusParams(params,request),20000,2);failures=0;}
+    catch(e){if(++failures>=3)throw new Error('Backend access is unavailable. The last request could not be confirmed.');await new Promise(resolve=>setTimeout(resolve,3000));continue;}
+    if(!reply||!reply.ok)throw new Error('The backend did not return a valid request status.');
+    const status=reply.status,done=await completedMobileResult(status,params,request,token);if(done)return done;
+    if(status.running){
+      idle=0;const op=status.operation;
+      if(op&&op.requestKey===request.key)token=op.token;
+      progress((token?'Your request is running':'Another update is finishing')+(op&&op.stage?' — '+op.stage:''));
+    }else{
+      // Require repeated idle confirmations before resending an uncertain
+      // request. Its original ID is retained, so the server can deduplicate it.
+      idle++;
+      if(idle>=3&&Date.now()-started>=15000&&retries<1){
+        retries++;progress('Reconnecting to the original request');
+        try{const r=await apiJsonp(params,360000);if(r&&r.ok)return r;if(r&&r.code!=='DFS_BUSY'){const e=new Error(r.error||'Request failed');e.serverRejected=true;throw e;}}
+        catch(e){if(e.serverRejected)throw e;}
+      }
+    }
+    await new Promise(resolve=>setTimeout(resolve,4000));
+  }
+  throw new Error('Could not confirm completion. Your request ID has been saved for reconnection.');
+}
+function savedMobileAction(){
+  let p=null;try{p=JSON.parse(localStorage.getItem('dfsPendingAction')||'null');}catch(e){}
+  if(!p||Date.now()-p.started>=12*60*1000)return null;
+  if(p.params)return p.params;
+  if(['refreshall','injuries'].includes(p.key))return {action:p.key,mode:v('mode')};
+  try{const k=JSON.parse(p.key);if(k[0]==='generate')return {action:'generate',mode:k[1],preset:k[2],day:k[3],customStart:k[4],customEnd:k[5]};}catch(e){}
+  return null;
+}
+
 async function runMobileAction(params,label,success){
   if(mutationPending)return;
   mutationPending=true;
   const request=pendingMobileRequest(params);params=Object.assign({},params,{requestId:request.id,requestStartedAt:request.started});
   const buttons=Array.from(document.querySelectorAll('.actions button'));buttons.forEach(b=>b.disabled=true);
-  const started=Date.now();let phase=label,settled=false,checking=false;
+  const started=Date.now();let phase=label,settled=false,checking=false,recovering=false;
   setStatus(phase);
   const progressTimer=setInterval(()=>setStatus(phase+' • '+Math.floor((Date.now()-started)/1000)+'s'),1000);
   const stageTimer=setInterval(async()=>{
-    if(checking||settled)return;checking=true;
-    try{const r=await apiJsonp({action:'status'},15000);const op=r&&r.status&&r.status.operation;
-      if(!settled&&op&&op.requestKey===request.key)phase=(params.action==='generate'?'Generating lineups':'Refreshing data')+(op.stage?' — '+op.stage:'…');
+    if(checking||settled||recovering)return;checking=true;
+    try{const r=await apiJsonp(mobileStatusParams(params,request),15000);const op=r&&r.status&&r.status.operation;
+      if(!settled&&!recovering&&op&&op.requestKey===request.key)phase=(params.action==='generate'?'Generating lineups':'Refreshing data')+(op.stage?' — '+op.stage:'…');
     }catch(e){}finally{checking=false;}
-  },8000);
+  },10000);
   try{
-    let r=await apiJsonp(params,360000),joinedToken=null;
-    const waitStarted=Date.now();
-    while(r&&!r.ok&&r.code==='DFS_BUSY'&&Date.now()-waitStarted<360000){
-      const op=r.status&&r.status.operation;
-      if(op&&op.requestKey===request.key)joinedToken=op.token;
-      phase=joinedToken?'Using the matching '+(params.action==='generate'?'lineup generation':'refresh')+' already in progress'+(op&&op.stage?' — '+op.stage:''):
-        'Finishing '+(op&&op.stage?op.stage:'the current server update')+' before '+(params.action==='generate'?'generating lineups':'refreshing');
-      await new Promise(resolve=>setTimeout(resolve,4000));
-      const check=await apiJsonp({action:'status'},20000);
-      if(!check||!check.ok)throw new Error('Could not check the active server operation');
-      const status=check.status,last=status.lastOperation;
-      if(joinedToken&&last&&last.token===joinedToken){
-        if(!last.ok){const error=new Error(last.error||'The active operation failed.');error.serverRejected=true;throw error;}
-        r={ok:true,data:await apiJsonp({action:'data',mode:params.mode},45000),reused:true};break;
+    let r;
+    try{
+      r=await apiJsonp(params,360000);let joinedToken=null;
+      const waitStarted=Date.now();
+      while(r&&!r.ok&&r.code==='DFS_BUSY'&&Date.now()-waitStarted<360000){
+        const op=r.status&&r.status.operation;
+        if(op&&op.requestKey===request.key)joinedToken=op.token;
+        phase=joinedToken?'Using the matching request already in progress'+(op&&op.stage?' — '+op.stage:''):
+          'Finishing '+(op&&op.stage?op.stage:'the current server update');
+        await new Promise(resolve=>setTimeout(resolve,4000));
+        const check=await readMobileJsonp(mobileStatusParams(params,request),20000,2);
+        if(!check||!check.ok)throw new Error('Could not check the active server operation');
+        const status=check.status,done=await completedMobileResult(status,params,request,joinedToken);
+        if(done){r=done;break;}
+        if(status.running){r.status=status;continue;}
+        if(joinedToken)throw new Error('Reconnecting to the completed shared operation');
+        phase=label;r=await apiJsonp(params,360000);
       }
-      if(status.running){r.status=status;continue;}
-      if(joinedToken)throw new Error('The shared operation finished, but its completion could not be confirmed. Reopen to load the saved results.');
-      phase=label;r=await apiJsonp(params,360000);
+    }catch(e){
+      if(e.serverRejected)throw e;
+      recovering=true;phase='Reconnecting to your saved request';
+      r=await recoverMobileAction(params,request,message=>phase=message);
     }
-    if(!r||!r.ok){
-      const error=new Error(r&&r.code==='DFS_BUSY'?'The current update is still running. This request has not been submitted again.':r&&r.error||'Update failed');
-      error.serverRejected=!!r;throw error;
-    }
+    if(!r||!r.ok){const e=new Error(r&&r.code==='DFS_BUSY'?'The current update is still running. Your request is saved.':r&&r.error||'Update failed');e.serverRejected=!!r&&r.code!=='DFS_BUSY';throw e;}
     settled=true;clearPendingMobileRequest(request.id);
     DATA=r.data;populateFilters();renderPlayers();renderLineups();
     const ve=document.getElementById('appVersion');if(ve&&DATA.version)ve.textContent='• '+DATA.version;
-    setStatus(success+(r.reused?' • reused completed request':''));
+    setStatus(success+(r.reused?' • connection recovered / saved result loaded':''));
     if(params.action==='generate')showTab('lineups',document.querySelectorAll('.tab')[1]);
   }catch(e){
-    settled=true;
-    if(e.serverRejected)clearPendingMobileRequest(request.id);
-    setStatus(e.serverRejected?'Request stopped: '+errorText(e):'Connection interrupted: '+errorText(e)+'. Reopening and retrying the same action will reconnect without duplicating a confirmed completed request.');
-  }finally{
-    settled=true;clearInterval(progressTimer);clearInterval(stageTimer);mutationPending=false;buttons.forEach(b=>b.disabled=false);
-  }
+    settled=true;if(e.serverRejected)clearPendingMobileRequest(request.id);
+    setStatus(e.serverRejected?'Request stopped: '+errorText(e):'Unable to reconnect: '+errorText(e)+' The request ID is saved; the app will check it again when reopened.');
+  }finally{settled=true;clearInterval(progressTimer);clearInterval(stageTimer);mutationPending=false;buttons.forEach(b=>b.disabled=false);}
 }
+
 async function refreshAll(){return runMobileAction({action:'refreshall',mode:v('mode')},'Refreshing all data…','Refresh complete');}
 async function refreshInjuries(){return runMobileAction({action:'injuries',mode:v('mode')},'Refreshing injuries…','Injuries updated');}
 
@@ -251,8 +302,8 @@ function setStatus(x){document.getElementById('status').textContent=x} function 
 function num(x,d){const n=Number(x);return isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):'-'}
 function pct(x,signed){if(x===null||x===undefined||x==='')return '—';const n=Number(x);if(!isFinite(n))return '-';return (signed&&n>0?'+':'')+(n*100).toFixed(0)+'%'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1424').catch(()=>{}));}
-loadData();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1425').catch(()=>{}));}
+loadData().then(()=>{const pending=savedMobileAction();if(pending&&!mutationPending)runMobileAction(pending,'Reconnecting to your saved request…',pending.action==='generate'?'Lineups loaded':'Update complete');});
 </script>
 </body>
 </html>
