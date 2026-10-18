@@ -155,7 +155,10 @@ function playerCard(x){
 function renderLineups(){
   const el=document.getElementById('lineups');
   const status=DATA.backtestStatus;
-  const notice=status&&status.message?`<div class="meta" style="margin-bottom:12px">Backtest: ${esc(status.message)}</div>`:'';
+  const backtestMessage=status&&status.status==='WAITING FOR COMPLETION'
+    ?'Next evaluation: waiting for an archived slate’s games to finish. Completed results remain in backtest history.'
+    :status&&status.message||'';
+  const notice=backtestMessage?`<div class="meta" style="margin-bottom:12px">Backtest: ${esc(backtestMessage)}</div>`:'';
   el.innerHTML=notice+(DATA.lineups.map(l=>`<div class="card"><div class="row"><div class="name">Lineup #${l.rank}</div><div class="meta">$${num(l.salary,0)} • ${num(l.proj,1)} saved proj</div></div><div class="meta" style="margin-top:8px">Current player projections</div><div class="lineup">${l.players.map((p,i)=>`<div>${['QB','RB','RB','WR','WR','WR','TE','FLEX','DST'][i]}: <b>${esc(p)}</b><span class="player-projection">${l.playerProjections&&l.playerProjections[i]!=null?num(l.playerProjections[i],1)+' projected pts':'Projection unavailable'}</span></div>`).join('')}</div></div>`).join('')||'<div class="loading">Generate lineups in the sheet/app first.</div>');
 }
 function showTab(name,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('players').classList.toggle('hidden',name!=='players');document.getElementById('lineups').classList.toggle('hidden',name!=='lineups');document.getElementById('playerControls').classList.toggle('hidden',name!=='players');}
