@@ -46,7 +46,7 @@
 <body>
 <div class="app">
   <div class="top">
-    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.23</span></h1>
+    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.24</span></h1>
     <div class="sub" id="status">Loading player model…</div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('players',this)">Players</button>
@@ -161,44 +161,70 @@ function renderLineups(){
 function showTab(name,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('players').classList.toggle('hidden',name!=='players');document.getElementById('lineups').classList.toggle('hidden',name!=='lineups');document.getElementById('playerControls').classList.toggle('hidden',name!=='players');}
 function errorText(e){if(!e)return 'Unknown server error';if(typeof e==='string')return e;if(e.message)return e.message;try{return JSON.stringify(e)}catch(_){return String(e)}}
 let mutationPending=false;
+function mobileRequestKey(p){
+  if(p.action==='generate')return JSON.stringify([p.action,p.mode||'Single Entry GPP',String(p.preset||'').toUpperCase(),String(p.day||'ALL').toUpperCase(),p.customStart||'',p.customEnd||'']);
+  return p.action;
+}
+function pendingMobileRequest(params){
+  const key=mobileRequestKey(params);let old=null;
+  try{old=JSON.parse(localStorage.getItem('dfsPendingAction')||'null');}catch(e){}
+  if(old&&old.key===key&&Date.now()-old.started<12*60*1000)return old;
+  const request={key:key,id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),started:Date.now()};
+  try{localStorage.setItem('dfsPendingAction',JSON.stringify(request));}catch(e){}
+  return request;
+}
+function clearPendingMobileRequest(id){
+  try{const old=JSON.parse(localStorage.getItem('dfsPendingAction')||'null');if(old&&old.id===id)localStorage.removeItem('dfsPendingAction');}catch(e){}
+}
 async function runMobileAction(params,label,success){
   if(mutationPending)return;
   mutationPending=true;
-  const buttons=Array.from(document.querySelectorAll('.actions button'));
-  buttons.forEach(b=>b.disabled=true);
-  const started=Date.now();
-  setStatus(label);
-  const progressTimer=setInterval(()=>{const seconds=Math.floor((Date.now()-started)/1000);setStatus(label+' '+seconds+'s elapsed'+(seconds>=45?' • Still waiting for the server. Keep this app open.':''));},1000);
+  const request=pendingMobileRequest(params);params=Object.assign({},params,{requestId:request.id,requestStartedAt:request.started});
+  const buttons=Array.from(document.querySelectorAll('.actions button'));buttons.forEach(b=>b.disabled=true);
+  const started=Date.now();let phase=label,settled=false,checking=false;
+  setStatus(phase);
+  const progressTimer=setInterval(()=>setStatus(phase+' • '+Math.floor((Date.now()-started)/1000)+'s'),1000);
+  const stageTimer=setInterval(async()=>{
+    if(checking||settled)return;checking=true;
+    try{const r=await apiJsonp({action:'status'},15000);const op=r&&r.status&&r.status.operation;
+      if(!settled&&op&&op.requestKey===request.key)phase=(params.action==='generate'?'Generating lineups':'Refreshing data')+(op.stage?' — '+op.stage:'…');
+    }catch(e){}finally{checking=false;}
+  },8000);
   try{
-    let r=await apiJsonp(params,360000);
+    let r=await apiJsonp(params,360000),joinedToken=null;
     const waitStarted=Date.now();
-    while(r&&!r.ok&&r.code==='DFS_BUSY'&&Date.now()-waitStarted<120000){
-      clearInterval(progressTimer);
+    while(r&&!r.ok&&r.code==='DFS_BUSY'&&Date.now()-waitStarted<360000){
       const op=r.status&&r.status.operation;
-      const age=op?Math.max(0,Math.floor((Date.now()-new Date(op.startedAt).getTime())/1000)):null;
-      setStatus('Waiting for '+(op?op.action:'another server operation')+(age!==null?' ('+age+'s elapsed)':'')+'. Your request has not started.');
-      await new Promise(resolve=>setTimeout(resolve,5000));
-      const check=await apiJsonp({action:'status'},15000);
+      if(op&&op.requestKey===request.key)joinedToken=op.token;
+      phase=joinedToken?'Using the matching '+(params.action==='generate'?'lineup generation':'refresh')+' already in progress'+(op&&op.stage?' — '+op.stage:''):
+        'Finishing '+(op&&op.stage?op.stage:'the current server update')+' before '+(params.action==='generate'?'generating lineups':'refreshing');
+      await new Promise(resolve=>setTimeout(resolve,4000));
+      const check=await apiJsonp({action:'status'},20000);
       if(!check||!check.ok)throw new Error('Could not check the active server operation');
-      if(check.status.running){r.status=check.status;continue;}
-      setStatus(label+' Server lock available; starting your request…');
-      r=await apiJsonp(params,360000);
+      const status=check.status,last=status.lastOperation;
+      if(joinedToken&&last&&last.token===joinedToken){
+        if(!last.ok){const error=new Error(last.error||'The active operation failed.');error.serverRejected=true;throw error;}
+        r={ok:true,data:await apiJsonp({action:'data',mode:params.mode},45000),reused:true};break;
+      }
+      if(status.running){r.status=status;continue;}
+      if(joinedToken)throw new Error('The shared operation finished, but its completion could not be confirmed. Reopen to load the saved results.');
+      phase=label;r=await apiJsonp(params,360000);
     }
     if(!r||!r.ok){
-      if(r&&(r.code==='DFS_BUSY'||/already running/.test(r.error||''))){
-        const op=r.status&&r.status.operation;
-        setStatus('Request not started: '+(op?op.action:'another server operation')+' still holds the update lock after 2 minutes.');
-        return;
-      }
-      const error=new Error(r&&r.error||'Update failed');error.serverRejected=!!r;throw error;
+      const error=new Error(r&&r.code==='DFS_BUSY'?'The current update is still running. This request has not been submitted again.':r&&r.error||'Update failed');
+      error.serverRejected=!!r;throw error;
     }
-    DATA=r.data;populateFilters();renderPlayers();renderLineups();setStatus(success);
+    settled=true;clearPendingMobileRequest(request.id);
+    DATA=r.data;populateFilters();renderPlayers();renderLineups();
+    const ve=document.getElementById('appVersion');if(ve&&DATA.version)ve.textContent='• '+DATA.version;
+    setStatus(success+(r.reused?' • reused completed request':''));
     if(params.action==='generate')showTab('lineups',document.querySelectorAll('.tab')[1]);
   }catch(e){
-    setStatus(e.serverRejected?'Request stopped: '+errorText(e):'Update response unavailable: '+errorText(e)+'. The server may still be working; reopen the app to check before retrying.');
+    settled=true;
+    if(e.serverRejected)clearPendingMobileRequest(request.id);
+    setStatus(e.serverRejected?'Request stopped: '+errorText(e):'Connection interrupted: '+errorText(e)+'. Reopening and retrying the same action will reconnect without duplicating a confirmed completed request.');
   }finally{
-    clearInterval(progressTimer);
-    mutationPending=false;buttons.forEach(b=>b.disabled=false);
+    settled=true;clearInterval(progressTimer);clearInterval(stageTimer);mutationPending=false;buttons.forEach(b=>b.disabled=false);
   }
 }
 async function refreshAll(){return runMobileAction({action:'refreshall',mode:v('mode')},'Refreshing all data…','Refresh complete');}
@@ -225,7 +251,7 @@ function setStatus(x){document.getElementById('status').textContent=x} function 
 function num(x,d){const n=Number(x);return isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):'-'}
 function pct(x,signed){if(x===null||x===undefined||x==='')return '—';const n=Number(x);if(!isFinite(n))return '-';return (signed&&n>0?'+':'')+(n*100).toFixed(0)+'%'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1411').catch(()=>{}));}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1424').catch(()=>{}));}
 loadData();
 </script>
 </body>
