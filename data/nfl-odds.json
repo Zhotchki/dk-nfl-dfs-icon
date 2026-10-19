@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-19T12:52:07.016Z",
+  "checkedAt": "2026-10-19T19:12:47.457Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -14,7 +14,7 @@
       "away": "NE",
       "home": "CHI",
       "kickoff": "2026-10-23T00:15Z",
-      "total": 49.5,
+      "total": 50.5,
       "spreadHome": -3,
       "source": "ESPN / DraftKings"
     }
