@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-10-19T05:57:44.063Z",
+  "checkedAt": "2026-10-19T12:52:07.016Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
       "away": "WSH",
       "home": "SF",
       "kickoff": "2026-10-20T00:15Z",
-      "total": 52.5,
+      "total": 51.5,
       "spreadHome": -7.5,
       "source": "ESPN / DraftKings"
     },
@@ -15,7 +15,7 @@
       "home": "CHI",
       "kickoff": "2026-10-23T00:15Z",
       "total": 49.5,
-      "spreadHome": -2.5,
+      "spreadHome": -3,
       "source": "ESPN / DraftKings"
     }
   ]
