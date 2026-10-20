@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-20T01:40:42.719Z",
+  "checkedAt": "2026-10-20T07:24:14.953Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -8,7 +8,7 @@
       "kickoff": "2026-10-23T00:15Z",
       "total": 50.5,
       "spreadHome": -3,
-      "source": "ESPN / DraftKings"
+      "source": "ESPN / Draft Kings"
     }
   ]
 }
