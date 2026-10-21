@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-21T09:32:06.704Z",
+  "checkedAt": "2026-10-21T14:35:49.172Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -46,7 +46,7 @@
       "away": "MIA",
       "home": "NYJ",
       "kickoff": "2026-10-25T17:00Z",
-      "total": 38.5,
+      "total": 39.5,
       "spreadHome": -4.5,
       "source": "ESPN / DraftKings"
     },
