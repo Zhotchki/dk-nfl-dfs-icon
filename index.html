@@ -41,12 +41,13 @@
     #appVersion{display:block;font-size:12px!important;opacity:1!important;color:#cbd5e1;margin-top:4px}
     .sub{color:#cbd5e1;line-height:1.45;overflow-wrap:anywhere}
   .player-projection{display:block;margin-top:4px;color:#93c5fd;font-weight:600;font-size:12px}
+  .lineup-tuning select{display:block;width:100%;margin-top:5px}.lineup-tuning label{font-size:12px;color:#cbd5e1}.lineup-tuning button{width:100%;margin-top:4px}
   </style>
 </head>
 <body>
 <div class="app">
   <div class="top">
-    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.25</span></h1>
+    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.31</span></h1>
     <div class="sub" id="status">Loading player model…</div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('players',this)">Players</button>
@@ -82,6 +83,16 @@
       </div>
     </div>
   </div>
+  <details class="card lineup-tuning" open>
+    <summary style="font-weight:700;margin-bottom:10px">Lineup tuning</summary>
+    <div class="filters">
+      <label>Lineup style<select id="lineupStyle" onchange="saveLineupTuning()"><option value="BALANCED">Balanced</option><option value="CEILING">High ceiling</option><option value="FLOOR">Safer floor</option></select></label>
+      <label>Boom-or-bust players<select id="boomBustSlots" onchange="saveLineupTuning()"><option value="AUTO">Auto</option><option value="0">0 per lineup</option><option value="1">1 per lineup</option><option value="2">2 per lineup</option><option value="3">3 per lineup</option></select></label>
+    </div>
+    <p class="meta" style="line-height:1.5">High ceiling favors upside; Safer floor favors less downside. Boom-or-bust players are RB/WR/TEs with a modeled floor at most 65% of projection and a ceiling at least 30% above it.</p>
+    <button onclick="generate()">Generate tuned lineups</button>
+    <p class="meta" style="line-height:1.5">Ceiling totals add individual player ceilings. They are upside estimates, not an expected score or a calibrated lineup percentile.</p>
+  </details>
   <div id="players"><div class="loading">Loading…</div></div>
   <div id="lineups" class="hidden"></div>
 </div>
@@ -159,13 +170,13 @@ function renderLineups(){
     ?'Next evaluation: waiting for an archived slate’s games to finish. Completed results remain in backtest history.'
     :status&&status.message||'';
   const notice=backtestMessage?`<div class="meta" style="margin-bottom:12px">Backtest: ${esc(backtestMessage)}</div>`:'';
-  el.innerHTML=notice+(DATA.lineups.map(l=>`<div class="card"><div class="row"><div class="name">Lineup #${l.rank}</div><div class="meta">$${num(l.salary,0)} • ${num(l.proj,1)} saved proj</div></div><div class="meta" style="margin-top:8px">Current player projections</div><div class="lineup">${l.players.map((p,i)=>`<div>${['QB','RB','RB','WR','WR','WR','TE','FLEX','DST'][i]}: <b>${esc(p)}</b><span class="player-projection">${l.playerProjections&&l.playerProjections[i]!=null?num(l.playerProjections[i],1)+' projected pts':'Projection unavailable'}</span></div>`).join('')}</div></div>`).join('')||'<div class="loading">Generate lineups in the sheet/app first.</div>');
+  el.innerHTML=notice+(DATA.lineups.map(l=>`<div class="card"><div class="row"><div class="name">Lineup #${l.rank}</div><div class="meta">$${num(l.salary,0)} • ${num(l.proj,1)} saved proj • ${lineupCeilingLabel(l)}</div></div><div class="meta" style="margin-top:8px">${l.tuning?esc({BALANCED:"Balanced",CEILING:"High ceiling",FLOOR:"Safer floor"}[l.tuning.style])+" • ":""}${l.boomBustCount==null?"":l.boomBustCount+" boom-or-bust players • "}Current player projections</div><div class="lineup">${l.players.map((p,i)=>`<div>${['QB','RB','RB','WR','WR','WR','TE','FLEX','DST'][i]}: <b>${esc(p)}</b><span class="player-projection">${l.playerProjections&&l.playerProjections[i]!=null?num(l.playerProjections[i],1)+' projected pts':'Projection unavailable'}</span>${lineupPlayerRange(l,i)}</div>`).join('')}</div></div>`).join('')||'<div class="loading">Generate lineups in the sheet/app first.</div>');
 }
 function showTab(name,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('players').classList.toggle('hidden',name!=='players');document.getElementById('lineups').classList.toggle('hidden',name!=='lineups');document.getElementById('playerControls').classList.toggle('hidden',name!=='players');}
 function errorText(e){if(!e)return 'Unknown server error';if(typeof e==='string')return e;if(e.message)return e.message;try{return JSON.stringify(e)}catch(_){return String(e)}}
 let mutationPending=false;
 function mobileRequestKey(p){
-  if(p.action==='generate')return JSON.stringify([p.action,p.mode||'Single Entry GPP',String(p.preset||'').toUpperCase(),String(p.day||'ALL').toUpperCase(),p.customStart||'',p.customEnd||'']);
+  if(p.action==='generate'){const k=[p.action,p.mode||'Single Entry GPP',String(p.preset||'').toUpperCase(),String(p.day||'ALL').toUpperCase(),p.customStart||'',p.customEnd||''];const style=String(p.style||'BALANCED').toUpperCase(),slots=p.boomBustSlots==null||p.boomBustSlots===''||p.boomBustSlots==='AUTO'?null:Number(p.boomBustSlots);if(style!=='BALANCED'||slots!==null)k.push(style,slots);return JSON.stringify(k);}
   return p.action;
 }
 function pendingMobileRequest(params){
@@ -227,7 +238,7 @@ function savedMobileAction(){
   if(!p||Date.now()-p.started>=12*60*1000)return null;
   if(p.params)return p.params;
   if(['refreshall','injuries'].includes(p.key))return {action:p.key,mode:v('mode')};
-  try{const k=JSON.parse(p.key);if(k[0]==='generate')return {action:'generate',mode:k[1],preset:k[2],day:k[3],customStart:k[4],customEnd:k[5]};}catch(e){}
+  try{const k=JSON.parse(p.key);if(k[0]==='generate')return {action:'generate',mode:k[1],preset:k[2],day:k[3],customStart:k[4],customEnd:k[5],style:k[6]||'BALANCED',boomBustSlots:k[7]==null?'AUTO':k[7]};}catch(e){}
   return null;
 }
 
@@ -300,12 +311,18 @@ function mobileSlateMatch(start,slate,customDay){
   return true;
 }
 
-async function generate(){return runMobileAction({action:'generate',mode:v('mode'),preset:v('slate'),day:v('day')},'Generating lineups…','Lineups generated • '+v('slate'));}
+async function generate(){return runMobileAction({action:'generate',mode:v('mode'),preset:v('slate'),day:v('day'),...lineupTuningParams()},'Generating lineups…','Lineups generated • '+v('slate'));}
+function saveLineupTuning(){try{localStorage.setItem('dfsLineupTuning',JSON.stringify({style:v('lineupStyle'),boomBustSlots:v('boomBustSlots')}));}catch(e){}}
+function restoreLineupTuning(){try{const t=JSON.parse(localStorage.getItem('dfsLineupTuning')||'null');if(t){if(['BALANCED','CEILING','FLOOR'].includes(t.style))document.getElementById('lineupStyle').value=t.style;if(['AUTO','0','1','2','3'].includes(String(t.boomBustSlots)))document.getElementById('boomBustSlots').value=t.boomBustSlots;}}catch(e){}}
+function lineupTuningParams(){return {style:v('lineupStyle'),boomBustSlots:v('boomBustSlots')};}
+function lineupCeilingLabel(l){return l.ceil==null?'Ceiling unavailable':num(l.ceil,1)+(l.ceilingSource==='saved'?' saved ceiling':' current ceiling');}
+function lineupPlayerRange(l,i){const c=l.playerCeilings&&l.playerCeilings[i],f=l.playerFloors&&l.playerFloors[i];return (c==null?'':'<span class="meta" style="display:block;margin-top:4px">Ceiling '+num(c,1)+(f==null?'':' • Floor '+num(f,1))+'</span>');}
 function setStatus(x){document.getElementById('status').textContent=x} function v(id){return document.getElementById(id).value}
 function num(x,d){const n=Number(x);return isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):'-'}
 function pct(x,signed){if(x===null||x===undefined||x==='')return '—';const n=Number(x);if(!isFinite(n))return '-';return (signed&&n>0?'+':'')+(n*100).toFixed(0)+'%'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1425').catch(()=>{}));}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1431').catch(()=>{}));}
+restoreLineupTuning();
 loadData().then(()=>{const pending=savedMobileAction();if(pending&&!mutationPending)runMobileAction(pending,'Reconnecting to your saved request…',pending.action==='generate'?'Lineups loaded':'Update complete');});
 </script>
 </body>
