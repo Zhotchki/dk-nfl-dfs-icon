@@ -47,7 +47,7 @@
 <body>
 <div class="app">
   <div class="top">
-    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.32</span></h1>
+    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.33</span></h1>
     <div class="sub" id="status">Loading player model…</div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('players',this)">Players</button>
@@ -170,7 +170,7 @@ function renderLineups(){
     ?'Next evaluation: waiting for an archived slate’s games to finish. Completed results remain in backtest history.'
     :status&&status.message||'';
   const notice=backtestMessage?`<div class="meta" style="margin-bottom:12px">Backtest: ${esc(backtestMessage)}</div>`:'';
-  el.innerHTML=notice+(projectedLineupOrder().map((l,displayIndex)=>`<div class="card"><div class="row"><div class="name">Lineup #${displayIndex+1}</div><div class="meta">$${num(l.salary,0)} • ${num(l.proj,1)} saved proj • ${lineupCeilingLabel(l)}</div></div><div class="meta" style="margin-top:8px">${l.tuning?esc({BALANCED:"Balanced",CEILING:"High ceiling",FLOOR:"Safer floor"}[l.tuning.style])+" • ":""}${l.boomBustCount==null?"":l.boomBustCount+" boom-or-bust players • "}Current player projections</div><div class="lineup">${l.players.map((p,i)=>`<div>${['QB','RB','RB','WR','WR','WR','TE','FLEX','DST'][i]}: <b>${esc(p)}</b>${lineupPlayerMatchup(l,i)}<span class="player-projection">${l.playerProjections&&l.playerProjections[i]!=null?num(l.playerProjections[i],1)+' projected pts':'Projection unavailable'}</span>${lineupPlayerRange(l,i)}</div>`).join('')}</div></div>`).join('')||'<div class="loading">Generate lineups in the sheet/app first.</div>');
+  el.innerHTML=notice+(projectedLineupOrder().map((l,displayIndex)=>`<div class="card"><div class="row"><div class="name">Lineup #${displayIndex+1}</div><div class="meta">$${num(l.salary,0)} • ${num(l.proj,1)} saved proj • ${lineupCeilingLabel(l)}</div></div><div class="meta" style="margin-top:8px">${l.tuning?esc({BALANCED:"Balanced",CEILING:"High ceiling",FLOOR:"Safer floor"}[l.tuning.style])+" • ":""}${l.boomBustCount==null?"":l.boomBustCount+" boom-or-bust players • "}Current player projections</div><div class="lineup">${l.players.map((p,i)=>`<div>${['QB','RB','RB','WR','WR','WR','TE','FLEX','DST'][i]}: <b>${esc(p)}</b>${lineupPlayerMatchup(l,i)}<span class="player-projection">${l.playerProjections&&l.playerProjections[i]!=null?num(l.playerProjections[i],1)+' projected pts':'Projection unavailable'}</span>${lineupPlayerRange(l,i)}${lineupPlayerAverage(l,i)}</div>`).join('')}</div></div>`).join('')||'<div class="loading">Generate lineups in the sheet/app first.</div>');
 }
 function showTab(name,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById('players').classList.toggle('hidden',name!=='players');document.getElementById('lineups').classList.toggle('hidden',name!=='lineups');document.getElementById('playerControls').classList.toggle('hidden',name!=='players');}
 function errorText(e){if(!e)return 'Unknown server error';if(typeof e==='string')return e;if(e.message)return e.message;try{return JSON.stringify(e)}catch(_){return String(e)}}
@@ -318,15 +318,17 @@ function lineupTuningParams(){return {style:v('lineupStyle'),boomBustSlots:v('bo
 function lineupPlayerMatchup(l,i){const m=l.playerMatchups&&l.playerMatchups[i];return '<span class="meta" style="display:block;margin-top:4px">'+(m&&m.opp?esc(m.team)+' vs '+esc(m.opp):'Opponent unavailable')+'</span>';}
 function projectedLineupOrder(){return (DATA.lineups||[]).slice().sort((a,b)=>(Number(b.proj)||0)-(Number(a.proj)||0)||Number(a.rank)-Number(b.rank));}
 function lineupCeilingLabel(l){return l.ceil==null?'Ceiling unavailable':num(l.ceil,1)+(l.ceilingSource==='saved'?' saved ceiling':' current ceiling');}
+function lineupPlayerAverage(l,i){const a=l.playerAverages&&l.playerAverages[i];return '<span class="meta" style="display:block;margin-top:4px">'+(a&&a.avg!=null&&Number.isFinite(Number(a.avg))?'Season DK avg: <b>'+num(a.avg,1)+'</b> pts/game ('+num(a.games,0)+' recorded '+(Number(a.games)===1?'game':'games')+')':'Average unavailable')+'</span>';}
 function lineupPlayerRange(l,i){const c=l.playerCeilings&&l.playerCeilings[i],f=l.playerFloors&&l.playerFloors[i];return (c==null?'':'<span class="meta" style="display:block;margin-top:4px">Ceiling '+num(c,1)+(f==null?'':' • Floor '+num(f,1))+'</span>');}
 function setStatus(x){document.getElementById('status').textContent=x} function v(id){return document.getElementById(id).value}
 function num(x,d){const n=Number(x);return isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):'-'}
 function pct(x,signed){if(x===null||x===undefined||x==='')return '—';const n=Number(x);if(!isFinite(n))return '-';return (signed&&n>0?'+':'')+(n*100).toFixed(0)+'%'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1432').catch(()=>{}));}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1433').catch(()=>{}));}
 restoreLineupTuning();
 loadData().then(()=>{const pending=savedMobileAction();if(pending&&!mutationPending)runMobileAction(pending,'Reconnecting to your saved request…',pending.action==='generate'?'Lineups loaded':'Update complete');});
 </script>
 </body>
 </html>
+
 
