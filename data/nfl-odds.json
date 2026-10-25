@@ -1,31 +1,7 @@
 {
-  "checkedAt": "2026-10-25T17:46:54.206Z",
+  "checkedAt": "2026-10-25T20:42:45.847Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
-    {
-      "away": "DEN",
-      "home": "ARI",
-      "kickoff": "2026-10-25T20:05Z",
-      "total": 43.5,
-      "spreadHome": 4.5,
-      "source": "ESPN / Draft Kings"
-    },
-    {
-      "away": "GB",
-      "home": "DET",
-      "kickoff": "2026-10-25T20:25Z",
-      "total": 55.5,
-      "spreadHome": -3.5,
-      "source": "ESPN / Draft Kings"
-    },
-    {
-      "away": "LAR",
-      "home": "LV",
-      "kickoff": "2026-10-25T20:25Z",
-      "total": 48.5,
-      "spreadHome": 3.5,
-      "source": "ESPN / Draft Kings"
-    },
     {
       "away": "KC",
       "home": "SEA",
