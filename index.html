@@ -47,7 +47,7 @@
 <body>
 <div class="app">
   <div class="top">
-    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.33</span></h1>
+    <h1>NFL DFS Command Center <span id="appVersion" style="font-size:.55em;font-weight:600;opacity:.72;white-space:nowrap">• v1.4.34</span></h1>
     <div class="sub" id="status">Loading player model…</div>
     <div class="tabs">
       <button class="tab active" onclick="showTab('players',this)">Players</button>
@@ -121,14 +121,17 @@ async function loadData(){
   const p=document.getElementById('players');
   if(p)p.innerHTML='<div class="loading">Loading player data…</div>';
   try{
-    const d=await apiJsonp({action:'data',mode});
+    const d=await readMobileJsonp({action:'data',mode},30000,2);
+    if(!d||!Array.isArray(d.players)||!Array.isArray(d.lineups))throw new Error(d&&d.error||'Backend returned no app data.');
     DATA=d||{players:[],lineups:[],teams:[],tags:[]};
     const ve=document.getElementById('appVersion'); if(ve&&d&&d.version)ve.textContent='• '+d.version;
     populateFilters();renderPlayers();renderLineups();
     setStatus('Updated '+new Date(d.updated).toLocaleTimeString()+' • '+d.mode+' • '+(d.version||'version unknown'));
+    return true;
   }catch(err){
     setStatus('Load error: '+errorText(err));
-    if(p)p.innerHTML='<div class="loading">Load failed. <button onclick="loadData()">Retry</button></div>';
+    if(p)p.innerHTML='<div class="loading">Connection unavailable. <button onclick="reconnectApp()">Retry connection</button></div>';
+    return false;
   }
 }
 function populateFilters(){
@@ -324,11 +327,13 @@ function setStatus(x){document.getElementById('status').textContent=x} function 
 function num(x,d){const n=Number(x);return isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):'-'}
 function pct(x,signed){if(x===null||x===undefined||x==='')return '—';const n=Number(x);if(!isFinite(n))return '-';return (signed&&n>0?'+':'')+(n*100).toFixed(0)+'%'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1433').catch(()=>{}));}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1434').catch(()=>{}));}
 restoreLineupTuning();
-loadData().then(()=>{const pending=savedMobileAction();if(pending&&!mutationPending)runMobileAction(pending,'Reconnecting to your saved request…',pending.action==='generate'?'Lineups loaded':'Update complete');});
+async function reconnectApp(){const connected=await loadData();if(!connected)return false;const pending=savedMobileAction();if(pending&&!mutationPending)await runMobileAction(pending,'Reconnecting to your saved request…',pending.action==='generate'?'Lineups loaded':'Update complete');return true;}
+reconnectApp();
 </script>
 </body>
 </html>
+
 
 
