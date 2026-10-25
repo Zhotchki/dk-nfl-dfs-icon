@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-25T00:10:32.854Z",
+  "checkedAt": "2026-10-25T05:09:41.654Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -78,7 +78,7 @@
       "away": "GB",
       "home": "DET",
       "kickoff": "2026-10-25T20:25Z",
-      "total": 54.5,
+      "total": 55.5,
       "spreadHome": -3.5,
       "source": "ESPN / DraftKings"
     },
