@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-10-25T20:42:45.847Z",
+  "checkedAt": "2026-10-25T23:08:21.646Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
       "away": "KC",
       "home": "SEA",
       "kickoff": "2026-10-26T00:20Z",
-      "total": 42.5,
+      "total": 43.5,
       "spreadHome": -3,
       "source": "ESPN / Draft Kings"
     },
