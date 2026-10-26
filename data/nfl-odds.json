@@ -1,14 +1,14 @@
 {
-  "checkedAt": "2026-10-26T14:05:39.582Z",
+  "checkedAt": "2026-10-26T19:51:55.675Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
       "away": "DAL",
       "home": "PHI",
       "kickoff": "2026-10-27T00:15Z",
-      "total": 43.5,
+      "total": 44.5,
       "spreadHome": 4.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "CAR",
@@ -16,7 +16,7 @@
       "kickoff": "2026-10-30T00:15Z",
       "total": 47.5,
       "spreadHome": -3.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     }
   ]
 }
