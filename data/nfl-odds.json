@@ -1,14 +1,14 @@
 {
-  "checkedAt": "2026-10-27T10:20:41.130Z",
+  "checkedAt": "2026-10-27T15:58:59.567Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
       "away": "CAR",
       "home": "GB",
       "kickoff": "2026-10-30T00:15Z",
-      "total": 47.5,
+      "total": 48.5,
       "spreadHome": -3.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     }
   ]
 }
