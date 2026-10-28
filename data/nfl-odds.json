@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-28T11:32:09.942Z",
+  "checkedAt": "2026-10-28T17:17:50.696Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -15,14 +15,14 @@
       "home": "DAL",
       "kickoff": "2026-11-01T18:00Z",
       "total": 54.5,
-      "spreadHome": -6.5,
+      "spreadHome": -7,
       "source": "ESPN / DraftKings"
     },
     {
       "away": "ATL",
       "home": "TB",
       "kickoff": "2026-11-01T18:00Z",
-      "total": 45.5,
+      "total": 44.5,
       "spreadHome": -2.5,
       "source": "ESPN / DraftKings"
     },
@@ -86,7 +86,7 @@
       "away": "KC",
       "home": "DEN",
       "kickoff": "2026-11-01T21:25Z",
-      "total": 41.5,
+      "total": 40.5,
       "spreadHome": 1.5,
       "source": "ESPN / DraftKings"
     },
