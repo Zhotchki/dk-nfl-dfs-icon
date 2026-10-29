@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-29T08:19:39.422Z",
+  "checkedAt": "2026-10-29T15:28:27.546Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -71,7 +71,7 @@
       "home": "CIN",
       "kickoff": "2026-11-01T18:00Z",
       "total": 46.5,
-      "spreadHome": -10,
+      "spreadHome": -11.5,
       "source": "ESPN / DraftKings"
     },
     {
