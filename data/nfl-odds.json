@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-31T08:45:23.244Z",
+  "checkedAt": "2026-10-31T15:14:23.978Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -30,7 +30,7 @@
       "away": "CLE",
       "home": "PIT",
       "kickoff": "2026-11-01T18:00Z",
-      "total": 39.5,
+      "total": 38.5,
       "spreadHome": -3.5,
       "source": "ESPN / DraftKings"
     },
@@ -95,7 +95,7 @@
       "home": "WSH",
       "kickoff": "2026-11-02T01:20Z",
       "total": 40.5,
-      "spreadHome": -5.5,
+      "spreadHome": -6,
       "source": "ESPN / DraftKings"
     },
     {
