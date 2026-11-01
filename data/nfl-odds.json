@@ -1,76 +1,12 @@
 {
-  "checkedAt": "2026-11-01T15:56:29.010Z",
+  "checkedAt": "2026-11-01T20:24:48.786Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
-    {
-      "away": "ARI",
-      "home": "DAL",
-      "kickoff": "2026-11-01T18:00Z",
-      "total": 54.5,
-      "spreadHome": -7,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "ATL",
-      "home": "TB",
-      "kickoff": "2026-11-01T18:00Z",
-      "total": 43.5,
-      "spreadHome": -2.5,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "BAL",
-      "home": "BUF",
-      "kickoff": "2026-11-01T18:00Z",
-      "total": 54.5,
-      "spreadHome": -3,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "CLE",
-      "home": "PIT",
-      "kickoff": "2026-11-01T18:00Z",
-      "total": 38.5,
-      "spreadHome": -3.5,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "IND",
-      "home": "JAX",
-      "kickoff": "2026-11-01T18:00Z",
-      "total": 46.5,
-      "spreadHome": -10,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "LV",
-      "home": "NYJ",
-      "kickoff": "2026-11-01T18:00Z",
-      "total": 46.5,
-      "spreadHome": -1.5,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "MIN",
-      "home": "DET",
-      "kickoff": "2026-11-01T18:00Z",
-      "total": 46.5,
-      "spreadHome": -3,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "TEN",
-      "home": "CIN",
-      "kickoff": "2026-11-01T18:00Z",
-      "total": 46.5,
-      "spreadHome": -13.5,
-      "source": "ESPN / DraftKings"
-    },
     {
       "away": "LAC",
       "home": "LAR",
       "kickoff": "2026-11-01T21:05Z",
-      "total": 45.5,
+      "total": 46.5,
       "spreadHome": -6.5,
       "source": "ESPN / DraftKings"
     },
@@ -103,14 +39,6 @@
       "home": "SEA",
       "kickoff": "2026-11-03T01:15Z",
       "total": 46.5,
-      "spreadHome": -3,
-      "source": "ESPN / DraftKings"
-    },
-    {
-      "away": "JAX",
-      "home": "BAL",
-      "kickoff": "2026-11-06T01:15Z",
-      "total": 48.5,
       "spreadHome": -3,
       "source": "ESPN / DraftKings"
     }
