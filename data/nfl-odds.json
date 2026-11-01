@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-31T22:44:24.757Z",
+  "checkedAt": "2026-11-01T02:03:28.926Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -46,7 +46,7 @@
       "away": "LV",
       "home": "NYJ",
       "kickoff": "2026-11-01T18:00Z",
-      "total": 45.5,
+      "total": 46.5,
       "spreadHome": -1.5,
       "source": "ESPN / DraftKings"
     },
@@ -103,6 +103,14 @@
       "home": "SEA",
       "kickoff": "2026-11-03T01:15Z",
       "total": 46.5,
+      "spreadHome": -3,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "JAX",
+      "home": "BAL",
+      "kickoff": "2026-11-06T01:15Z",
+      "total": 48.5,
       "spreadHome": -3,
       "source": "ESPN / DraftKings"
     }
