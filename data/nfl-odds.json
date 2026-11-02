@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-02T15:29:58.972Z",
+  "checkedAt": "2026-11-02T23:11:14.904Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -14,7 +14,7 @@
       "away": "JAX",
       "home": "BAL",
       "kickoff": "2026-11-06T01:15Z",
-      "total": 43.5,
+      "total": 42.5,
       "spreadHome": 8.5,
       "source": "ESPN / DraftKings"
     }
