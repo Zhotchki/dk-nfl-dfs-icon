@@ -1,15 +1,7 @@
 {
-  "checkedAt": "2026-11-02T23:11:14.904Z",
+  "checkedAt": "2026-11-03T03:59:32.030Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
-    {
-      "away": "CHI",
-      "home": "SEA",
-      "kickoff": "2026-11-03T01:15Z",
-      "total": 46.5,
-      "spreadHome": -3,
-      "source": "ESPN / DraftKings"
-    },
     {
       "away": "JAX",
       "home": "BAL",
