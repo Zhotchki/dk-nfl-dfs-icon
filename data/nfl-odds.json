@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-03T19:24:41.453Z",
+  "checkedAt": "2026-11-04T00:09:48.697Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -7,7 +7,111 @@
       "home": "BAL",
       "kickoff": "2026-11-06T01:15Z",
       "total": 40.5,
-      "spreadHome": 10.5,
+      "spreadHome": 10,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "CIN",
+      "home": "ATL",
+      "kickoff": "2026-11-08T14:30Z",
+      "total": 52.5,
+      "spreadHome": 3,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "CLE",
+      "home": "NO",
+      "kickoff": "2026-11-08T18:00Z",
+      "total": 42.5,
+      "spreadHome": -1.5,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "DAL",
+      "home": "IND",
+      "kickoff": "2026-11-08T18:00Z",
+      "total": 51.5,
+      "spreadHome": 6,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "DEN",
+      "home": "CAR",
+      "kickoff": "2026-11-08T18:00Z",
+      "total": 43.5,
+      "spreadHome": 2.5,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "DET",
+      "home": "MIA",
+      "kickoff": "2026-11-08T18:00Z",
+      "total": 50.5,
+      "spreadHome": 7,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "LAR",
+      "home": "WSH",
+      "kickoff": "2026-11-08T18:00Z",
+      "total": 47.5,
+      "spreadHome": 5.5,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "NYG",
+      "home": "PHI",
+      "kickoff": "2026-11-08T18:00Z",
+      "total": 39.5,
+      "spreadHome": 3.5,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "NYJ",
+      "home": "KC",
+      "kickoff": "2026-11-08T18:00Z",
+      "total": 46.5,
+      "spreadHome": -9.5,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "HOU",
+      "home": "LAC",
+      "kickoff": "2026-11-08T21:05Z",
+      "total": 40.5,
+      "spreadHome": 4.5,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "ARI",
+      "home": "SEA",
+      "kickoff": "2026-11-08T21:25Z",
+      "total": 41.5,
+      "spreadHome": -12.5,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "GB",
+      "home": "NE",
+      "kickoff": "2026-11-08T21:25Z",
+      "total": 46.5,
+      "spreadHome": -3,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "LV",
+      "home": "SF",
+      "kickoff": "2026-11-08T21:25Z",
+      "total": 52.5,
+      "spreadHome": -10,
+      "source": "ESPN / DraftKings"
+    },
+    {
+      "away": "TB",
+      "home": "CHI",
+      "kickoff": "2026-11-09T01:20Z",
+      "total": 46.5,
+      "spreadHome": -6,
       "source": "ESPN / DraftKings"
     }
   ]
