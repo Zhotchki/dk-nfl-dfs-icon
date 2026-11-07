@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-07T16:16:23.007Z",
+  "checkedAt": "2026-11-07T20:25:56.871Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -15,7 +15,7 @@
       "home": "NO",
       "kickoff": "2026-11-08T18:00Z",
       "total": 42.5,
-      "spreadHome": -3.5,
+      "spreadHome": -3,
       "source": "ESPN / Draft Kings"
     },
     {
@@ -31,7 +31,7 @@
       "home": "CAR",
       "kickoff": "2026-11-08T18:00Z",
       "total": 44.5,
-      "spreadHome": 3,
+      "spreadHome": 2.5,
       "source": "ESPN / Draft Kings"
     },
     {
@@ -62,8 +62,8 @@
       "away": "NYJ",
       "home": "KC",
       "kickoff": "2026-11-08T18:00Z",
-      "total": 47.5,
-      "spreadHome": -8.5,
+      "total": 48.5,
+      "spreadHome": -9.5,
       "source": "ESPN / Draft Kings"
     },
     {
