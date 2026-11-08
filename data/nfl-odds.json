@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-08T05:44:44.580Z",
+  "checkedAt": "2026-11-08T13:10:34.116Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -23,7 +23,7 @@
       "home": "IND",
       "kickoff": "2026-11-08T18:00Z",
       "total": 51.5,
-      "spreadHome": 5.5,
+      "spreadHome": 4.5,
       "source": "ESPN / Draft Kings"
     },
     {
@@ -71,7 +71,7 @@
       "home": "LAC",
       "kickoff": "2026-11-08T21:05Z",
       "total": 40.5,
-      "spreadHome": 6,
+      "spreadHome": 5.5,
       "source": "ESPN / Draft Kings"
     },
     {
@@ -87,7 +87,7 @@
       "home": "NE",
       "kickoff": "2026-11-08T21:25Z",
       "total": 44.5,
-      "spreadHome": -3.5,
+      "spreadHome": -3,
       "source": "ESPN / Draft Kings"
     },
     {
