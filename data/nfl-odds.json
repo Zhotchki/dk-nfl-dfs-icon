@@ -1,46 +1,14 @@
 {
-  "checkedAt": "2026-11-08T18:27:10.480Z",
+  "checkedAt": "2026-11-08T22:22:59.617Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
-    {
-      "away": "HOU",
-      "home": "LAC",
-      "kickoff": "2026-11-08T21:05Z",
-      "total": 40.5,
-      "spreadHome": 5.5,
-      "source": "ESPN / Draft Kings"
-    },
-    {
-      "away": "ARI",
-      "home": "SEA",
-      "kickoff": "2026-11-08T21:25Z",
-      "total": 39.5,
-      "spreadHome": -8.5,
-      "source": "ESPN / Draft Kings"
-    },
-    {
-      "away": "GB",
-      "home": "NE",
-      "kickoff": "2026-11-08T21:25Z",
-      "total": 44.5,
-      "spreadHome": -3,
-      "source": "ESPN / Draft Kings"
-    },
-    {
-      "away": "LV",
-      "home": "SF",
-      "kickoff": "2026-11-08T21:25Z",
-      "total": 51.5,
-      "spreadHome": -8.5,
-      "source": "ESPN / Draft Kings"
-    },
     {
       "away": "TB",
       "home": "CHI",
       "kickoff": "2026-11-09T01:20Z",
       "total": 47.5,
       "spreadHome": -6,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "BUF",
@@ -48,7 +16,7 @@
       "kickoff": "2026-11-10T01:15Z",
       "total": 43.5,
       "spreadHome": 3,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     }
   ]
 }
