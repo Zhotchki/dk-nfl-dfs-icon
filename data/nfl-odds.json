@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-13T21:21:43.946Z",
+  "checkedAt": "2026-11-14T01:39:49.616Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -7,7 +7,7 @@
       "home": "DET",
       "kickoff": "2026-11-15T14:30Z",
       "total": 49.5,
-      "spreadHome": -3,
+      "spreadHome": -2.5,
       "source": "ESPN / DraftKings"
     },
     {
@@ -87,7 +87,7 @@
       "home": "DAL",
       "kickoff": "2026-11-15T21:25Z",
       "total": 55.5,
-      "spreadHome": 3.5,
+      "spreadHome": 4.5,
       "source": "ESPN / DraftKings"
     },
     {
