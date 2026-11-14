@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-14T15:42:26.656Z",
+  "checkedAt": "2026-11-14T20:33:53.413Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -15,7 +15,7 @@
       "home": "NYJ",
       "kickoff": "2026-11-15T18:00Z",
       "total": 50.5,
-      "spreadHome": 8.5,
+      "spreadHome": 7.5,
       "source": "ESPN / DraftKings"
     },
     {
@@ -54,8 +54,8 @@
       "away": "MIA",
       "home": "IND",
       "kickoff": "2026-11-15T18:00Z",
-      "total": 38.5,
-      "spreadHome": -3.5,
+      "total": 37.5,
+      "spreadHome": -4.5,
       "source": "ESPN / DraftKings"
     },
     {
@@ -87,7 +87,7 @@
       "home": "DAL",
       "kickoff": "2026-11-15T21:25Z",
       "total": 55.5,
-      "spreadHome": 4.5,
+      "spreadHome": 3.5,
       "source": "ESPN / DraftKings"
     },
     {
