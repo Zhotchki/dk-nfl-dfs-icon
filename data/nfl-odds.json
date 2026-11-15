@@ -1,21 +1,13 @@
 {
-  "checkedAt": "2026-11-15T07:03:26.419Z",
+  "checkedAt": "2026-11-15T14:40:16.163Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
-    {
-      "away": "NE",
-      "home": "DET",
-      "kickoff": "2026-11-15T14:30Z",
-      "total": 49.5,
-      "spreadHome": -2.5,
-      "source": "ESPN / DraftKings"
-    },
     {
       "away": "BUF",
       "home": "NYJ",
       "kickoff": "2026-11-15T18:00Z",
       "total": 50.5,
-      "spreadHome": 7.5,
+      "spreadHome": 8.5,
       "source": "ESPN / DraftKings"
     },
     {
@@ -38,7 +30,7 @@
       "away": "JAX",
       "home": "TEN",
       "kickoff": "2026-11-15T18:00Z",
-      "total": 46.5,
+      "total": 45.5,
       "spreadHome": 10.5,
       "source": "ESPN / DraftKings"
     },
@@ -87,7 +79,7 @@
       "home": "DAL",
       "kickoff": "2026-11-15T21:25Z",
       "total": 55.5,
-      "spreadHome": 3.5,
+      "spreadHome": 4.5,
       "source": "ESPN / DraftKings"
     },
     {
