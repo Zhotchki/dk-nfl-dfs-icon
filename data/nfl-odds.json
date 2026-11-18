@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-18T09:00:04.161Z",
+  "checkedAt": "2026-11-18T17:55:33.933Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -14,15 +14,15 @@
       "away": "ARI",
       "home": "KC",
       "kickoff": "2026-11-22T18:00Z",
-      "total": 41.5,
-      "spreadHome": -16.5,
+      "total": 40.5,
+      "spreadHome": -15.5,
       "source": "ESPN / DraftKings"
     },
     {
       "away": "BAL",
       "home": "CAR",
       "kickoff": "2026-11-22T18:00Z",
-      "total": 44.5,
+      "total": 43.5,
       "spreadHome": -2.5,
       "source": "ESPN / DraftKings"
     },
@@ -38,7 +38,7 @@
       "away": "NO",
       "home": "CHI",
       "kickoff": "2026-11-22T18:00Z",
-      "total": 49.5,
+      "total": 48.5,
       "spreadHome": -11.5,
       "source": "ESPN / DraftKings"
     },
@@ -71,7 +71,7 @@
       "home": "LAC",
       "kickoff": "2026-11-22T21:05Z",
       "total": 41.5,
-      "spreadHome": -3.5,
+      "spreadHome": -3,
       "source": "ESPN / DraftKings"
     },
     {
