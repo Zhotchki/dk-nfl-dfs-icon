@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-20T16:00:04.165Z",
+  "checkedAt": "2026-11-20T22:35:26.842Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -38,7 +38,7 @@
       "away": "PIT",
       "home": "PHI",
       "kickoff": "2026-11-22T18:00Z",
-      "total": 38.5,
+      "total": 37.5,
       "spreadHome": 3.5,
       "source": "ESPN / DraftKings"
     },
@@ -47,7 +47,7 @@
       "home": "DET",
       "kickoff": "2026-11-22T18:00Z",
       "total": 45.5,
-      "spreadHome": -6,
+      "spreadHome": -5.5,
       "source": "ESPN / DraftKings"
     },
     {
@@ -87,7 +87,7 @@
       "home": "SF",
       "kickoff": "2026-11-23T01:20Z",
       "total": 46.5,
-      "spreadHome": -3.5,
+      "spreadHome": -3,
       "source": "ESPN / DraftKings"
     },
     {
