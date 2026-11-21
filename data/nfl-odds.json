@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-21T03:25:27.216Z",
+  "checkedAt": "2026-11-21T11:38:58.463Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -8,7 +8,7 @@
       "kickoff": "2026-11-22T18:00Z",
       "total": 40.5,
       "spreadHome": -16.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "BAL",
@@ -16,7 +16,7 @@
       "kickoff": "2026-11-22T18:00Z",
       "total": 43.5,
       "spreadHome": -3,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "MIA",
@@ -24,7 +24,7 @@
       "kickoff": "2026-11-22T18:00Z",
       "total": 44.5,
       "spreadHome": -16.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "NO",
@@ -32,7 +32,7 @@
       "kickoff": "2026-11-22T18:00Z",
       "total": 48.5,
       "spreadHome": -11.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "PIT",
@@ -40,7 +40,7 @@
       "kickoff": "2026-11-22T18:00Z",
       "total": 37.5,
       "spreadHome": 3.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "TB",
@@ -48,7 +48,7 @@
       "kickoff": "2026-11-22T18:00Z",
       "total": 45.5,
       "spreadHome": -5.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "TEN",
@@ -56,7 +56,7 @@
       "kickoff": "2026-11-22T18:00Z",
       "total": 54.5,
       "spreadHome": -8.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "NYJ",
@@ -64,7 +64,7 @@
       "kickoff": "2026-11-22T21:05Z",
       "total": 41.5,
       "spreadHome": -3,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "JAX",
@@ -72,7 +72,7 @@
       "kickoff": "2026-11-22T21:25Z",
       "total": 46.5,
       "spreadHome": 6,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "LV",
@@ -80,7 +80,7 @@
       "kickoff": "2026-11-22T21:25Z",
       "total": 40.5,
       "spreadHome": -10.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "MIN",
@@ -88,7 +88,7 @@
       "kickoff": "2026-11-23T01:20Z",
       "total": 46.5,
       "spreadHome": -3,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "CIN",
@@ -96,7 +96,7 @@
       "kickoff": "2026-11-24T01:15Z",
       "total": 53.5,
       "spreadHome": 6,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     },
     {
       "away": "GB",
@@ -104,7 +104,7 @@
       "kickoff": "2026-11-26T01:00Z",
       "total": 45.5,
       "spreadHome": -3.5,
-      "source": "ESPN / Draft Kings"
+      "source": "ESPN / DraftKings"
     }
   ]
 }
