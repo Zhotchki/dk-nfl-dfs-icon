@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-23T01:30:04.944Z",
+  "checkedAt": "2026-11-23T09:40:22.126Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
@@ -8,7 +8,7 @@
       "kickoff": "2026-11-24T01:15Z",
       "total": 54.5,
       "spreadHome": 6,
-      "source": "ESPN / DraftKings"
+      "source": "ESPN / Draft Kings"
     },
     {
       "away": "GB",
@@ -16,7 +16,7 @@
       "kickoff": "2026-11-26T01:00Z",
       "total": 44.5,
       "spreadHome": -3,
-      "source": "ESPN / DraftKings"
+      "source": "ESPN / Draft Kings"
     },
     {
       "away": "CHI",
@@ -24,7 +24,7 @@
       "kickoff": "2026-11-26T18:00Z",
       "total": 55.5,
       "spreadHome": 2.5,
-      "source": "ESPN / DraftKings"
+      "source": "ESPN / Draft Kings"
     },
     {
       "away": "PHI",
@@ -32,23 +32,23 @@
       "kickoff": "2026-11-26T21:30Z",
       "total": 47.5,
       "spreadHome": -8.5,
-      "source": "ESPN / DraftKings"
+      "source": "ESPN / Draft Kings"
     },
     {
       "away": "KC",
       "home": "BUF",
       "kickoff": "2026-11-27T01:20Z",
       "total": 50.5,
-      "spreadHome": -2.5,
-      "source": "ESPN / DraftKings"
+      "spreadHome": -3,
+      "source": "ESPN / Draft Kings"
     },
     {
       "away": "DEN",
       "home": "PIT",
       "kickoff": "2026-11-27T20:00Z",
-      "total": 39.5,
-      "spreadHome": 2.5,
-      "source": "ESPN / DraftKings"
+      "total": 38.5,
+      "spreadHome": 3,
+      "source": "ESPN / Draft Kings"
     }
   ]
 }
