@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-11-24T05:51:52.389Z",
+  "checkedAt": "2026-11-24T17:27:00.590Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
       "away": "GB",
       "home": "LAR",
       "kickoff": "2026-11-26T01:00Z",
-      "total": 43.5,
+      "total": 44.5,
       "spreadHome": -2.5,
       "source": "ESPN / DraftKings"
     },
