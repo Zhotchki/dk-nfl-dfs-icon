@@ -1,12 +1,12 @@
 {
-  "checkedAt": "2026-11-25T01:31:46.441Z",
+  "checkedAt": "2026-11-25T10:20:15.514Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
     {
       "away": "GB",
       "home": "LAR",
       "kickoff": "2026-11-26T01:00Z",
-      "total": 43.5,
+      "total": 44.5,
       "spreadHome": -2.5,
       "source": "ESPN / DraftKings"
     },
@@ -15,14 +15,14 @@
       "home": "DET",
       "kickoff": "2026-11-26T18:00Z",
       "total": 55.5,
-      "spreadHome": 2.5,
+      "spreadHome": 1.5,
       "source": "ESPN / DraftKings"
     },
     {
       "away": "PHI",
       "home": "DAL",
       "kickoff": "2026-11-26T21:30Z",
-      "total": 47.5,
+      "total": 48.5,
       "spreadHome": -8.5,
       "source": "ESPN / DraftKings"
     },
@@ -30,7 +30,7 @@
       "away": "KC",
       "home": "BUF",
       "kickoff": "2026-11-27T01:20Z",
-      "total": 47.5,
+      "total": 46.5,
       "spreadHome": -3,
       "source": "ESPN / DraftKings"
     },
@@ -38,8 +38,8 @@
       "away": "DEN",
       "home": "PIT",
       "kickoff": "2026-11-27T20:00Z",
-      "total": 37.5,
-      "spreadHome": 3,
+      "total": 36.5,
+      "spreadHome": 3.5,
       "source": "ESPN / DraftKings"
     },
     {
@@ -103,7 +103,7 @@
       "home": "SF",
       "kickoff": "2026-11-29T21:25Z",
       "total": 45.5,
-      "spreadHome": -3.5,
+      "spreadHome": -3,
       "source": "ESPN / DraftKings"
     },
     {
