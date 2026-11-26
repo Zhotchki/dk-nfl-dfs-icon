@@ -57,7 +57,7 @@
       <div class="filters">
         <select id="mode" onchange="loadData()"><option>Cash</option><option selected>Single Entry GPP</option><option>Large-Field GPP</option></select>
         <select id="slate" onchange="renderPlayers()">
-      <option value="THU-MON">Thu–Mon</option>
+      <option value="THU-MON">Thu–Mon</option><option value="WED-FRI">Wed–Fri</option>
       <option value="SUNDAY MAIN">Sunday Main</option>
       <option value="EARLY ONLY">Early Only</option>
       <option value="SUN-MON">Sun–Mon</option>
@@ -65,7 +65,7 @@
       <option value="AFTERNOON TURBO">Afternoon Turbo</option>
       <option value="CUSTOM">Custom Slate</option>
     </select>
-    <select id="day" onchange="renderPlayers()"><option value="ALL">Custom: All Days</option><option>Thursday</option><option>Sunday</option><option>Monday</option></select>
+    <div id="customDays" style="display:none;grid-column:1/-1"><div>Custom slate days</div><div style="display:flex;flex-wrap:wrap;gap:12px;padding:8px 0"><label style="display:flex;align-items:center;gap:5px"><input style="width:auto" type="checkbox" name="slateDay" value="WEDNESDAY" onchange="renderPlayers()" checked> Wed</label><label style="display:flex;align-items:center;gap:5px"><input style="width:auto" type="checkbox" name="slateDay" value="THURSDAY" onchange="renderPlayers()" checked> Thu</label><label style="display:flex;align-items:center;gap:5px"><input style="width:auto" type="checkbox" name="slateDay" value="FRIDAY" onchange="renderPlayers()" checked> Fri</label><label style="display:flex;align-items:center;gap:5px"><input style="width:auto" type="checkbox" name="slateDay" value="SATURDAY" onchange="renderPlayers()" checked> Sat</label><label style="display:flex;align-items:center;gap:5px"><input style="width:auto" type="checkbox" name="slateDay" value="SUNDAY" onchange="renderPlayers()" checked> Sun</label><label style="display:flex;align-items:center;gap:5px"><input style="width:auto" type="checkbox" name="slateDay" value="MONDAY" onchange="renderPlayers()" checked> Mon</label><label style="display:flex;align-items:center;gap:5px"><input style="width:auto" type="checkbox" name="slateDay" value="TUESDAY" onchange="renderPlayers()" checked> Tue</label></div><button type="button" onclick="selectSlateDays(true)">All days</button> <button type="button" onclick="selectSlateDays(false)">Clear</button></div>
         <select id="pos" onchange="renderPlayers()"><option value="ALL">All Positions</option><option>QB</option><option>RB</option><option>WR</option><option>TE</option><option>DST</option></select>
         <select id="team" onchange="renderPlayers()"><option value="ALL">All Teams</option></select>
         <select id="grade" onchange="renderPlayers()"><option value="ALL">All Grades</option><option>A+</option><option>A</option><option>B+</option><option>B</option><option>C</option><option>D</option></select>
@@ -138,10 +138,13 @@ function populateFilters(){
   const t=document.getElementById('team'), old=t.value; t.innerHTML='<option value="ALL">All Teams</option>'+DATA.teams.map(x=>`<option>${x}</option>`).join(''); t.value=DATA.teams.includes(old)?old:'ALL';
   const g=document.getElementById('tag'), go=g.value; g.innerHTML='<option value="ALL">All Tags</option>'+DATA.tags.map(x=>`<option>${x}</option>`).join(''); g.value=DATA.tags.includes(go)?go:'ALL';
 }
+function selectSlateDays(checked){document.querySelectorAll('input[name="slateDay"]').forEach(x=>x.checked=checked);renderPlayers();}
+function customSlateDays(){const days=Array.from(document.querySelectorAll('input[name="slateDay"]:checked')).map(x=>x.value);return days.length===7?'ALL':days.join(',');}
 function renderPlayers(){
-  let p=[...DATA.players], pos=v('pos'), team=v('team'), grade=v('grade'), tag=v('tag'), slate=v('slate'), day=v('day');
+  let p=[...DATA.players], pos=v('pos'), team=v('team'), grade=v('grade'), tag=v('tag'), slate=v('slate'), day=customSlateDays();
+  document.getElementById('customDays').style.display=slate==='CUSTOM'?'block':'none';
   if(pos!=='ALL')p=p.filter(x=>x.pos===pos); if(team!=='ALL')p=p.filter(x=>x.team===team); if(grade!=='ALL')p=p.filter(x=>x.grade===grade); if(tag!=='ALL')p=p.filter(x=>x.tag===tag);
-  if(day!=='ALL') p=p.filter(x=>{const d=new Date(x.start);if(!isFinite(d.getTime()))return false;const fmtDay=new Intl.DateTimeFormat('en-US',{weekday:'long',timeZone:'America/Chicago'}).format(d);return fmtDay===day;});
+  p=p.filter(x=>mobileSlateMatch(x.start,slate,day));
   if(document.getElementById('healthy').checked)p=p.filter(x=>x.availability==='ACTIVE');
   if(document.getElementById('notstarted').checked){
     const now=Date.now();
@@ -306,17 +309,18 @@ function mobileSlateMatch(start,slate,customDay){
   const parts=new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'numeric',hour12:false,timeZone:'America/Chicago'}).formatToParts(d);
   const mins=Number(parts.find(z=>z.type==='hour').value)*60+Number(parts.find(z=>z.type==='minute').value);
   slate=(slate||'THU-MON').toUpperCase();
+  if(slate==='WED-FRI') return ['WEDNESDAY','THURSDAY','FRIDAY'].includes(dow);
   if(slate==='THU-MON') return ['THURSDAY','FRIDAY','SATURDAY','SUNDAY','MONDAY'].includes(dow);
   if(slate==='SUNDAY MAIN') return dow==='SUNDAY'&&mins>=720&&mins<960;
   if(slate==='EARLY ONLY') return dow==='SUNDAY'&&mins>=720&&mins<900;
   if(slate==='SUN-MON') return dow==='SUNDAY'||dow==='MONDAY';
   if(slate==='AFTERNOON ONLY') return dow==='SUNDAY'&&mins>=900&&mins<960;
   if(slate==='AFTERNOON TURBO') return dow==='SUNDAY'&&mins>=925&&mins<960;
-  if(slate==='CUSTOM') return customDay==='ALL'||dow===String(customDay).toUpperCase();
+  if(slate==='CUSTOM') return customDay==='ALL'||String(customDay).toUpperCase().split(',').includes(dow);
   return true;
 }
 
-async function generate(){return runMobileAction({action:'generate',mode:v('mode'),preset:v('slate'),day:v('day'),...lineupTuningParams()},'Generating lineups…','Lineups generated • '+v('slate'));}
+async function generate(){if(v('slate')==='CUSTOM'&&!customSlateDays()){setStatus('Select at least one custom slate day.');return;}return runMobileAction({action:'generate',mode:v('mode'),preset:v('slate'),day:v('slate')==='CUSTOM'?customSlateDays():'ALL',...lineupTuningParams()},'Generating lineups…','Lineups generated • '+v('slate'));}
 function saveLineupTuning(){try{localStorage.setItem('dfsLineupTuning',JSON.stringify({style:v('lineupStyle'),boomBustSlots:v('boomBustSlots')}));}catch(e){}}
 function restoreLineupTuning(){try{const t=JSON.parse(localStorage.getItem('dfsLineupTuning')||'null');if(t){if(['BALANCED','CEILING','FLOOR'].includes(t.style))document.getElementById('lineupStyle').value=t.style;if(['AUTO','0','1','2','3'].includes(String(t.boomBustSlots)))document.getElementById('boomBustSlots').value=t.boomBustSlots;}}catch(e){}}
 function lineupTuningParams(){return {style:v('lineupStyle'),boomBustSlots:v('boomBustSlots')};}
