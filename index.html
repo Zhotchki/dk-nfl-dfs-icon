@@ -93,6 +93,7 @@
     <button onclick="generate()">Generate tuned lineups</button>
     <p class="meta" style="line-height:1.5">Ceiling totals add individual player ceilings. They are upside estimates, not an expected score or a calibrated lineup percentile.</p>
   </details>
+  <div id="playerSearchControls" style="margin:12px 0"><label for="playerSearch" class="meta">Search players to lock</label><input id="playerSearch" type="search" placeholder="Enter player name" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px;font-size:16px;border-radius:8px;background:#111827;color:#fff;border:1px solid #475569" oninput="renderPlayers()"></div>
   <div id="players"><div class="loading">Loading…</div></div>
   <div id="lineups" class="hidden"></div>
 </div>
@@ -161,8 +162,11 @@ function renderPlayers(){
       return new Date(iso).getTime()>now;
     });
   }
+  const normalizeSearch=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const query=normalizeSearch(v('playerSearch'));
+  if(query)p=p.filter(x=>normalizeSearch(x.name).includes(query));
   const sort=v('sort'); p.sort((a,b)=>(Number(b[sort])||0)-(Number(a[sort])||0));
-  document.getElementById('players').innerHTML='<div class="card"><div class="name">Locked players ('+lockedPlayers.size+')</div><div class="meta">'+esc([...lockedPlayers.values()].join(', ')||'Select Lock on a player card')+'</div><button type="button" onclick="clearPlayerLocks()">Clear locks</button></div>'+(p.slice(0,100).map(playerCard).join('')||'<div class="loading">No matching players.</div>');
+  document.getElementById('players').innerHTML='<div class="card"><div class="name">Locked players ('+lockedPlayers.size+')</div><div class="meta">'+esc([...lockedPlayers.values()].join(', ')||'Select Lock on a player card')+'</div><button type="button" onclick="clearPlayerLocks()">Clear locks</button></div>'+(p.slice(0,query?250:100).map(playerCard).join('')||'<div class="loading">No matching players.</div>');
 }
 function playerCard(x){
   const cls=x.availability==='RISK'?'risk':(x.availability==='EXCLUDE'?'avoid':'grade');
@@ -337,7 +341,7 @@ function setStatus(x){document.getElementById('status').textContent=x} function 
 function num(x,d){const n=Number(x);return isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):'-'}
 function pct(x,signed){if(x===null||x===undefined||x==='')return '—';const n=Number(x);if(!isFinite(n))return '-';return (signed&&n>0?'+':'')+(n*100).toFixed(0)+'%'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1452-player-locks').catch(()=>{}));}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1453-player-search').catch(()=>{}));}
 restoreLineupTuning();
 async function reconnectApp(){const connected=await loadData();if(!connected)return false;const pending=savedMobileAction();if(pending&&!mutationPending)await runMobileAction(pending,'Reconnecting to your saved request…',pending.action==='generate'?'Lineups loaded':'Update complete');return true;}
 reconnectApp();
