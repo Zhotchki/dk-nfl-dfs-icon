@@ -121,11 +121,11 @@ async function loadData(){
   const p=document.getElementById('players');
   if(p)p.innerHTML='<div class="loading">Loading player data…</div>';
   try{
-    const d=await readMobileJsonp({action:'data',mode},30000,2);
+    const d=await readMobileJsonp({action:'data',mode},45000,3);
     if(!d||!Array.isArray(d.players)||!Array.isArray(d.lineups))throw new Error(d&&d.error||'Backend returned no app data.');
     DATA=d||{players:[],lineups:[],teams:[],tags:[]};
     const ve=document.getElementById('appVersion'); if(ve&&d&&d.version)ve.textContent='• '+d.version;
-    populateFilters();renderPlayers();renderLineups();
+    try{populateFilters();renderPlayers();renderLineups();}catch(renderError){setStatus('Data connected; display error: '+errorText(renderError));if(p)p.textContent='Player display failed: '+errorText(renderError);return false;}
     setStatus('Updated '+new Date(d.updated).toLocaleTimeString()+' • '+d.mode+' • '+(d.version||'version unknown'));
     return true;
   }catch(err){
@@ -142,7 +142,7 @@ function selectSlateDays(checked){document.querySelectorAll('input[name="slateDa
 function customSlateDays(){const days=Array.from(document.querySelectorAll('input[name="slateDay"]:checked')).map(x=>x.value);return days.length===7?'ALL':days.join(',');}
 function renderPlayers(){
   let p=[...DATA.players], pos=v('pos'), team=v('team'), grade=v('grade'), tag=v('tag'), slate=v('slate'), day=customSlateDays();
-  document.getElementById('customDays').style.display=slate==='CUSTOM'?'block':'none';
+  const customControls=document.getElementById('customDays');if(customControls)customControls.style.display=slate==='CUSTOM'?'block':'none';
   if(pos!=='ALL')p=p.filter(x=>x.pos===pos); if(team!=='ALL')p=p.filter(x=>x.team===team); if(grade!=='ALL')p=p.filter(x=>x.grade===grade); if(tag!=='ALL')p=p.filter(x=>x.tag===tag);
   p=p.filter(x=>mobileSlateMatch(x.start,slate,day));
   if(document.getElementById('healthy').checked)p=p.filter(x=>x.availability==='ACTIVE');
@@ -304,6 +304,7 @@ async function refreshAll(){return runMobileAction({action:'refreshall',mode:v('
 async function refreshInjuries(){return runMobileAction({action:'injuries',mode:v('mode')},'Refreshing injuries…','Injuries updated');}
 
 function mobileSlateMatch(start,slate,customDay){
+  if(!start)return false;
   const d=new Date(start); if(!isFinite(d.getTime())) return false;
   const dow=new Intl.DateTimeFormat('en-US',{weekday:'long',timeZone:'America/Chicago'}).format(d).toUpperCase();
   const parts=new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'numeric',hour12:false,timeZone:'America/Chicago'}).formatToParts(d);
@@ -333,7 +334,7 @@ function setStatus(x){document.getElementById('status').textContent=x} function 
 function num(x,d){const n=Number(x);return isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):'-'}
 function pct(x,signed){if(x===null||x===undefined||x==='')return '—';const n=Number(x);if(!isFinite(n))return '-';return (signed&&n>0?'+':'')+(n*100).toFixed(0)+'%'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1434').catch(()=>{}));}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1449-custom-days-fix').catch(()=>{}));}
 restoreLineupTuning();
 async function reconnectApp(){const connected=await loadData();if(!connected)return false;const pending=savedMobileAction();if(pending&&!mutationPending)await runMobileAction(pending,'Reconnecting to your saved request…',pending.action==='generate'?'Lineups loaded':'Update complete');return true;}
 reconnectApp();
