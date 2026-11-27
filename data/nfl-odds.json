@@ -1,15 +1,7 @@
 {
-  "checkedAt": "2026-11-26T21:51:20.974Z",
+  "checkedAt": "2026-11-27T04:01:53.049Z",
   "source": "ESPN scoreboard sportsbook odds",
   "games": [
-    {
-      "away": "KC",
-      "home": "BUF",
-      "kickoff": "2026-11-27T01:20Z",
-      "total": 45.5,
-      "spreadHome": -3,
-      "source": "ESPN / DraftKings"
-    },
     {
       "away": "DEN",
       "home": "PIT",
@@ -55,7 +47,7 @@
       "home": "MIA",
       "kickoff": "2026-11-29T18:00Z",
       "total": 39.5,
-      "spreadHome": 4.5,
+      "spreadHome": 5.5,
       "source": "ESPN / DraftKings"
     },
     {
