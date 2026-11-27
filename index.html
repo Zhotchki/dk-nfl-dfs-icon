@@ -140,6 +140,9 @@ function populateFilters(){
 }
 function selectSlateDays(checked){document.querySelectorAll('input[name="slateDay"]').forEach(x=>x.checked=checked);renderPlayers();}
 function customSlateDays(){const days=Array.from(document.querySelectorAll('input[name="slateDay"]:checked')).map(x=>x.value);return days.length===7?'ALL':days.join(',');}
+const lockedPlayers=new Map();
+function togglePlayerLock(index){const p=DATA.players[index];if(!p||!p.id)return;if(lockedPlayers.has(String(p.id)))lockedPlayers.delete(String(p.id));else if(lockedPlayers.size<9)lockedPlayers.set(String(p.id),p.name);else{setStatus('Maximum nine locked players.');return;}renderPlayers();}
+function clearPlayerLocks(){lockedPlayers.clear();renderPlayers();}
 function renderPlayers(){
   let p=[...DATA.players], pos=v('pos'), team=v('team'), grade=v('grade'), tag=v('tag'), slate=v('slate'), day=customSlateDays();
   const customControls=document.getElementById('customDays');if(customControls)customControls.style.display=slate==='CUSTOM'?'block':'none';
@@ -159,7 +162,7 @@ function renderPlayers(){
     });
   }
   const sort=v('sort'); p.sort((a,b)=>(Number(b[sort])||0)-(Number(a[sort])||0));
-  document.getElementById('players').innerHTML=p.slice(0,100).map(playerCard).join('')||'<div class="loading">No matching players.</div>';
+  document.getElementById('players').innerHTML='<div class="card"><div class="name">Locked players ('+lockedPlayers.size+')</div><div class="meta">'+esc([...lockedPlayers.values()].join(', ')||'Select Lock on a player card')+'</div><button type="button" onclick="clearPlayerLocks()">Clear locks</button></div>'+(p.slice(0,100).map(playerCard).join('')||'<div class="loading">No matching players.</div>');
 }
 function playerCard(x){
   const cls=x.availability==='RISK'?'risk':(x.availability==='EXCLUDE'?'avoid':'grade');
@@ -167,7 +170,7 @@ function playerCard(x){
   <div><span class="badge tag">${esc(x.tag||'')}</span><span class="badge">${esc(x.injury||'Healthy')}</span><span class="badge">Matchup ${esc(x.matchup||'-')}</span></div>
   <div class="metrics"><div class="m"><b>${num(x.proj,1)}</b><span>Proj</span></div><div class="m"><b>${num(x.ceil,1)}</b><span>Ceiling</span></div><div class="m"><b>${num(x.value,2)}x</b><span>Value</span></div><div class="m"><b>${pct(x.boom)}</b><span>Boom</span></div></div>
   <div class="metrics"><div class="m"><b>${pct(x.own)}</b><span>Own</span></div><div class="m"><b>${pct(x.usageTrend,true)}</b><span>Usage Trend</span></div><div class="m"><b>${num(x.implied,1)}</b><span>Team Total</span></div><div class="m"><b>${num(x.wind,0)}</b><span>Wind</span></div></div>
-  <div class="why">${esc(x.why||'')}</div></div>`;
+  <div class="why">${esc(x.why||'')}</div>${x.id?`<button type="button" onclick="togglePlayerLock(${DATA.players.indexOf(x)})">${lockedPlayers.has(String(x.id))?'Locked — tap to unlock':'Lock player'}</button>`:''}</div>`;
 }
 function renderLineups(){
   const el=document.getElementById('lineups');
@@ -321,7 +324,7 @@ function mobileSlateMatch(start,slate,customDay){
   return true;
 }
 
-async function generate(){if(v('slate')==='CUSTOM'&&!customSlateDays()){setStatus('Select at least one custom slate day.');return;}return runMobileAction({action:'generate',mode:v('mode'),preset:v('slate'),day:v('slate')==='CUSTOM'?customSlateDays():'ALL',...lineupTuningParams()},'Generating lineups…','Lineups generated • '+v('slate'));}
+async function generate(){if(v('slate')==='CUSTOM'&&!customSlateDays()){setStatus('Select at least one custom slate day.');return;}return runMobileAction({action:'generate',mode:v('mode'),preset:v('slate'),day:v('slate')==='CUSTOM'?customSlateDays():'ALL',...lineupTuningParams(),lockedIds:JSON.stringify([...lockedPlayers.keys()])},'Generating lineups…','Lineups generated • '+v('slate'));}
 function saveLineupTuning(){try{localStorage.setItem('dfsLineupTuning',JSON.stringify({style:v('lineupStyle'),boomBustSlots:v('boomBustSlots')}));}catch(e){}}
 function restoreLineupTuning(){try{const t=JSON.parse(localStorage.getItem('dfsLineupTuning')||'null');if(t){if(['BALANCED','CEILING','FLOOR'].includes(t.style))document.getElementById('lineupStyle').value=t.style;if(['AUTO','0','1','2','3'].includes(String(t.boomBustSlots)))document.getElementById('boomBustSlots').value=t.boomBustSlots;}}catch(e){}}
 function lineupTuningParams(){return {style:v('lineupStyle'),boomBustSlots:v('boomBustSlots')};}
@@ -334,7 +337,7 @@ function setStatus(x){document.getElementById('status').textContent=x} function 
 function num(x,d){const n=Number(x);return isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):'-'}
 function pct(x,signed){if(x===null||x===undefined||x==='')return '—';const n=Number(x);if(!isFinite(n))return '-';return (signed&&n>0?'+':'')+(n*100).toFixed(0)+'%'}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1449-custom-days-fix').catch(()=>{}));}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=1452-player-locks').catch(()=>{}));}
 restoreLineupTuning();
 async function reconnectApp(){const connected=await loadData();if(!connected)return false;const pending=savedMobileAction();if(pending&&!mutationPending)await runMobileAction(pending,'Reconnecting to your saved request…',pending.action==='generate'?'Lineups loaded':'Update complete');return true;}
 reconnectApp();
